@@ -206,7 +206,7 @@ def converts_m4a(address: str, is_original_delete: bool = True) -> None:
 def generate_subtitles(record_name: str, ass_filename: str, sub_format: str = 'srt') -> None:
     index_time = 0
     today = datetime.datetime.now()
-    re_datatime = today.strftime('%Y-%m-%d %H:%M:%S')
+    re_datatime = today.strftime('%Y%m%d')
 
     def transform_int_to_time(seconds: int) -> str:
         m, s = divmod(seconds, 60)
