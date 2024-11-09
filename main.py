@@ -1005,8 +1005,8 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
 
                                     try:
                                         if split_video_by_time:
-                                            now = time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime())
-                                            save_file_path = f"{full_path}/{anchor_name}_{title_in_name}{now}_%03d.mkv"
+                                            now = time.strftime("%Y%m%d", time.localtime())
+                                            save_file_path = f"{full_path}/{anchor_name}_{title_in_name}{now}-%03d.mkv"
                                             command = [
                                                 "-flags", "global_header",
                                                 "-c:v", "copy",
