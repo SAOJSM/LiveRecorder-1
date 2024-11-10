@@ -3,12 +3,12 @@ from setuptools import setup, find_packages
 
 setup(
     name='douyinliverecorder',
-    version='3.0.9',
-    author='Hmily',
+    version='4.0.1',
+    author='SAOJSM',
     description='An easy tool for recording live streams',
     long_description=open('README.md', encoding='utf-8').read(),
     long_description_content_type='text/markdown',
-    url='https://github.com/ihmily/DouyinLiveRecorder',
+    url='https://github.com/SAOJSM/LiveRecorder-1',
     packages=find_packages(),
     install_requires=[
         'requests',
