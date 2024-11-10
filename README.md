@@ -317,13 +317,21 @@ sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 
 sudo update-alternatives --config python3
 ```
 
-2.請一併升級PIP包
+2.請一併升級PIP包並升級，安裝後檢查版本是否正確
 ```bash
 sudo apt install python3.10-distutils
 curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
 python3 get-pip.py
+python3.10 -m pip install --upgrade pip
+python3.10 -m pip --version
 ```
 
+3.如果你在執行安裝requirements.txt時獲得以下錯誤請依照此藥方修正
+pip3: can't open file '/LiveRecorder-1/install': [Errno 2] No such file or directory
+修正方法
+```bash
+python3.10 -m pip install -r requirements.txt
+```
 
 &emsp;
 ## 🐋容器运行
