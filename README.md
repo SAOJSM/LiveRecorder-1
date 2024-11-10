@@ -300,6 +300,31 @@ python main.py
 
 其中Linux系统请使用`python3 main.py` 运行。
 
+## 避坑指南
+若要用上面的方式執行
+請先查看本避坑指南
+1.Python版本請>3.10
+如果沒有將會報錯
+請透過此方法安裝3.10版本
+並設定3.10版本設定為預設使用
+```bash
+sudo apt update
+sudo apt install -y software-properties-common
+sudo add-apt-repository ppa:deadsnakes/ppa
+sudo apt update
+sudo apt install python3.10
+sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1
+sudo update-alternatives --config python3
+```
+
+2.請一併升級PIP包
+```bash
+sudo apt install python3.10-distutils
+curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+python3 get-pip.py
+```
+
+
 &emsp;
 ## 🐋容器运行
 
