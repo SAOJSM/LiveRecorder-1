@@ -326,9 +326,11 @@ python3.10 -m pip install --upgrade pip
 python3.10 -m pip --version
 ```
 
-3.如果你在執行安裝requirements.txt時獲得以下錯誤請依照此藥方修正
+3.如果你在執行安裝requirements.txt時獲得以下錯誤
+(常見於Oracle VPS或是安裝了純淨版Linux系統)
+
 pip3: can't open file '/LiveRecorder-1/install': [Errno 2] No such file or directory
-修正方法
+請依照以下修正方法操作
 ```bash
 python3.10 -m pip install -r requirements.txt
 ```
