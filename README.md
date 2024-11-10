@@ -254,7 +254,7 @@ https://h.catshow168.com/live/preview.html?uid=19066357&anchorUid=18895331
 1.首先拉取或手动下载本仓库项目代码
 
 ```bash
-git clone https://github.com/ihmily/DouyinLiveRecorder.git
+git clone https://github.com/SAOJSM/LiveRecorder-1.git
 ```
 
 2.进入项目文件夹，安装依赖
