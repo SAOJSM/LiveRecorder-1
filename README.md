@@ -260,7 +260,7 @@ git clone https://github.com/SAOJSM/LiveRecorder-1.git
 2.进入项目文件夹，安装依赖
 
 ```bash
-cd DouyinLiveRecorder
+cd LiveRecorder-1
 pip3 install -r requirements.txt
 ```
 
