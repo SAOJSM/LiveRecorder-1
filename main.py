@@ -1,11 +1,11 @@
 # -*- encoding: utf-8 -*-
 
 """
-Author: Hmily
-GitHub: https://github.com/ihmily
+Author: SAOJSM
+GitHub: https://github.com/SAOJSM
 Date: 2023-07-17 23:52:05
-Update: 2024-11-07 01:00:00
-Copyright (c) 2023-2024 by Hmily, All Rights Reserved.
+Update: 2024-11-10 23:00:00
+Copyright (c) 2023-2024 by SAOJSM, All Rights Reserved.
 Function: Record live stream video.
 """
 
@@ -1165,12 +1165,12 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
 
                                 else:
                                     if split_video_by_time:
-                                        now = time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime())
+                                        now = time.strftime("%Y%m%d", time.localtime())
                                         filename = anchor_name + f'_{title_in_name}' + now + ".ts"
                                         print(f'{rec_info}/{filename}')
 
                                         try:
-                                            save_file_path = f"{full_path}/{anchor_name}_{title_in_name}{now}_%03d.ts"
+                                            save_file_path = f"{full_path}/{anchor_name} {title_in_name}{now}-%01d.ts"
                                             command = [
                                                 "-c:v", "copy",
                                                 "-c:a", "copy",
