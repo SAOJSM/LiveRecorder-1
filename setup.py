@@ -2,7 +2,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='douyinliverecorder',
+    name='BreadcrumbsLiveRecorder-1',
     version='4.0.1',
     author='SAOJSM',
     description='An easy tool for recording live streams',
