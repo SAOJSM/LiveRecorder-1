@@ -48,10 +48,10 @@ def dingtalk(url: str, content: str, number: str = None) -> Dict[str, Any]:
                 success.append(api)
             else:
                 error.append(api)
-                print(f'钉钉推送失败, 推送地址：{api}, {json_data["errmsg"]}')
+                print(f'釘釘推送失敗, 推送地址：{api}, {json_data["errmsg"]}')
         except Exception as e:
             error.append(api)
-            print(f'钉钉推送失败, 推送地址：{api}, 错误信息:{e}')
+            print(f'釘釘推送失敗, 推送地址：{api}, 錯誤信息:{e}')
     return {"success": success, "error": error}
 
 
@@ -74,10 +74,10 @@ def xizhi(url: str, title: str, content: str) -> Dict[str, Any]:
                 success.append(api)
             else:
                 error.append(api)
-                print(f'微信推送失败, 推送地址：{api}, 失败信息：{json_data["msg"]}')
+                print(f'微信推送失敗, 推送地址：{api}, 失敗信息：{json_data["msg"]}')
         except Exception as e:
             error.append(api)
-            print(f'微信推送失败, 推送地址：{api}, 错误信息:{e}')
+            print(f'微信推送失敗, 推送地址：{api}, 錯誤信息:{e}')
     return {"success": success, "error": error}
 
 
@@ -101,7 +101,7 @@ def send_email(email_host: str, login_email: str, email_pass: str, sender_email:
         smtp_obj.sendmail(sender_email, receivers, message.as_string())
         return {"success": receivers, "error": []}
     except smtplib.SMTPException as e:
-        print(f'邮件推送失败, 推送邮箱：{to_email}, 错误信息:{e}')
+        print(f'郵件推送失敗, 推送郵箱：{to_email}, 錯誤信息:{e}')
         return {"success": [], "error": receivers}
 
 
@@ -119,7 +119,7 @@ def tg_bot(chat_id: int, token: str, content: str) -> Dict[str, Any]:
         _json_data = json.loads(json_str)
         return {"success": [1], "error": []}
     except Exception as e:
-        print(f'tg推送失败, 聊天ID：{chat_id}, 错误信息:{e}')
+        print(f'tg推送失敗, 聊天ID：{chat_id}, 錯誤信息:{e}')
         return {"success": [], "error": [1]}
 
 
@@ -152,10 +152,10 @@ def bark(api: str, title: str = "message", content: str = 'test', level: str = "
                 success.append(_api)
             else:
                 error.append(_api)
-                print(f'Bark推送失败, 推送地址：{_api}, 失败信息：{json_data["message"]}')
+                print(f'Bark推送失敗, 推送地址：{_api}, 失敗信息：{json_data["message"]}')
         except Exception as e:
             error.append(api)
-            print(f'Bark推送失败, 推送地址：{_api}, 错误信息:{e}')
+            print(f'Bark推送失敗, 推送地址：{_api}, 錯誤信息:{e}')
     return {"success": success, "error": error}
 
 
@@ -196,35 +196,35 @@ def ntfy(api: str, title: str = "message", content: str = 'test', tags: str = 't
                 success.append(_api)
             else:
                 error.append(_api)
-                print(f'ntfy推送失败, 推送地址：{_api}, 失败信息：{json_data["error"]}')
+                print(f'ntfy推送失敗, 推送地址：{_api}, 失敗信息：{json_data["error"]}')
         except urllib.error.HTTPError as e:
             error.append(_api)
             error_msg = e.read().decode("utf-8")
-            print(f'ntfy推送失败, 推送地址：{_api}, 错误信息:{json.loads(error_msg)["error"]}')
+            print(f'ntfy推送失敗, 推送地址：{_api}, 錯誤信息:{json.loads(error_msg)["error"]}')
         except Exception as e:
             error.append(api)
-            print(f'ntfy推送失败, 推送地址：{_api}, 错误信息:{e}')
+            print(f'ntfy推送失敗, 推送地址：{_api}, 錯誤信息:{e}')
     return {"success": success, "error": error}
 
 
 if __name__ == '__main__':
-    send_title = '直播通知'  # 标题
-    send_content = '张三 开播了！'  # 推送内容
+    send_title = '直播通知'  # 標題
+    send_content = '張三 開播了！'  # 推送內容
 
-    # 钉钉推送通知
-    webhook_api = ''  # 替换成自己Webhook链接,参考文档：https://open.dingtalk.com/document/robots/custom-robot-access
-    phone_number = ''  # 被@用户的手机号码
+    # 釘釘推送通知
+    webhook_api = ''  # 替換成自己Webhook鏈接,參考文檔：https://open.dingtalk.com/document/robots/custom-robot-access
+    phone_number = ''  # 被@用戶的手機號碼
     # dingtalk(webhook_api, send_content, phone_number)
 
     # 微信推送通知
-    # 替换成自己的单点推送接口,获取地址：https://xz.qqoq.net/#/admin/one
-    # 当然也可以使用其他平台API 如server酱 使用方法一样
+    # 替換成自己的單點推送接口,獲取地址：https://xz.qqoq.net/#/admin/one
+    # 當然也可以使用其他平台API 如server醬 使用方法一樣
     xizhi_api = 'https://xizhi.qqoq.net/xxxxxxxxx.send'
     # xizhi(xizhi_api, send_content)
 
     # telegram推送通知
-    tg_token = ''  # tg搜索"BotFather"获取的token值
-    tg_chat_id = 000000  # tg搜索"userinfobot"获取的chat_id值，即可发送推送消息给你自己，如果下面的是群组id则发送到群
+    tg_token = ''  # tg搜索"BotFather"獲取的token值
+    tg_chat_id = 000000  # tg搜索"userinfobot"獲取的chat_id值，即可發送推送消息給你自己，如果下面的是群組id則發送到群
     # tg_bot(tg_chat_id, tg_token, send_content)
 
     # email_message(
@@ -244,5 +244,5 @@ if __name__ == '__main__':
     ntfy(
         api="https://ntfy.sh/xxxxx",
         title="直播推送",
-        content="xxx已开播",
+        content="xxx已開播",
     )
