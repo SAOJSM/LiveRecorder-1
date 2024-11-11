@@ -6,14 +6,14 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
-name = "douyinliverecorder"
-version = "3.0.9"
+name = "LiveRecorder-1"
+version = "4.0.1"
 description = "An easy tool for recording live streams"
 authors = ["Hmily"]
 license = "MIT"
 readme = "README.md"
-homepage = "https://github.com/ihmily/DouyinLiveRecorder"
-repository = "https://github.com/ihmily/DouyinLiveRecorder"
+homepage = "https://github.com/SAOJSM/LiveRecorder-1"
+repository = "https://github.com/SAOJSM/LiveRecorder-1"
 keywords = ["douyin", "live", "recorder"]
 
 [tool.poetry.dependencies]
