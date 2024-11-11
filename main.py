@@ -90,39 +90,39 @@ def display_info() -> None:
             time.sleep(5)
             if Path(sys.executable).name != 'pythonw.exe':
                 os.system(clear_command)
-            print(f"\r共监测{monitoring}个直播中", end=" | ")
-            print(f"同一时间访问网络的线程数: {max_request}", end=" | ")
-            print(f"是否开启代理录制: {'是' if use_proxy else '否'}", end=" | ")
+            print(f"\r共監測{monitoring}個直播中", end=" | ")
+            print(f"同一時間訪問網絡的線程數: {max_request}", end=" | ")
+            print(f"是否開啟代理錄製: {'是' if use_proxy else '否'}", end=" | ")
             if split_video_by_time:
-                print(f"录制分段开启: {split_time}秒", end=" | ")
-            print(f"是否生成时间文件: {'是' if create_time_file else '否'}", end=" | ")
-            print(f"录制视频质量为: {video_record_quality}", end=" | ")
-            print(f"录制视频格式为: {video_save_type}", end=" | ")
-            print(f"目前瞬时错误数为: {error_count}", end=" | ")
+                print(f"錄製分段開啟: {split_time}秒", end=" | ")
+            print(f"是否生成時間文件: {'是' if create_time_file else '否'}", end=" | ")
+            print(f"錄製視頻質量為: {video_record_quality}", end=" | ")
+            print(f"錄製視頻格式為: {video_save_type}", end=" | ")
+            print(f"目前瞬時錯誤數為: {error_count}", end=" | ")
             now = time.strftime("%H:%M:%S", time.localtime())
-            print(f"当前时间: {now}")
+            print(f"當前時間: {now}")
 
             if len(recording) == 0:
                 time.sleep(5)
                 if monitoring == 0:
-                    print("\r没有正在监测和录制的直播")
+                    print("\r沒有正在監測和錄製的直播")
                 else:
-                    print(f"\r没有正在录制的直播 循环监测间隔时间：{delay_default}秒")
+                    print(f"\r沒有正在錄製的直播 循環監測間隔時間：{delay_default}秒")
             else:
                 now_time = datetime.datetime.now()
                 print("x" * 60)
                 no_repeat_recording = list(set(recording))
-                print(f"正在录制{len(no_repeat_recording)}个直播: ")
+                print(f"正在錄製{len(no_repeat_recording)}個直播: ")
                 for recording_live in no_repeat_recording:
                     rt, qa = recording_time_list[recording_live]
                     have_record_time = now_time - rt
-                    print(f"{recording_live}[{qa}] 正在录制中 {str(have_record_time).split('.')[0]}")
+                    print(f"{recording_live}[{qa}] 正在錄製中 {str(have_record_time).split('.')[0]}")
 
-                # print('\n本软件已运行：'+str(now_time - start_display_time).split('.')[0])
+                # print('\n本軟件已運行：'+str(now_time - start_display_time).split('.')[0])
                 print("x" * 60)
                 start_display_time = now_time
         except Exception as e:
-            logger.error(f"错误信息: {e} 发生错误的行数: {e.__traceback__.tb_lineno}")
+            logger.error(f"錯誤信息: {e} 發生錯誤的行數: {e.__traceback__.tb_lineno}")
 
 
 def update_file(file_path: str, old_str: str, new_str: str, start_str: str = None) -> str | None:
@@ -140,7 +140,7 @@ def update_file(file_path: str, old_str: str, new_str: str, start_str: str = Non
                     if text_line not in file_data:
                         file_data.append(text_line)
             except RuntimeError as e:
-                logger.error(f"错误信息: {e} 发生错误的行数: {e.__traceback__.tb_lineno}")
+                logger.error(f"錯誤信息: {e} 發生錯誤的行數: {e.__traceback__.tb_lineno}")
                 if ini_URL_content:
                     with open(file_path, "w", encoding=text_encoding) as f2:
                         f2.write(ini_URL_content)
@@ -249,7 +249,7 @@ def adjust_max_request() -> None:
 
             if pre_max_request != max_request:
                 pre_max_request = max_request
-                print(f"\r同一时间访问网络的线程数动态改为 {max_request}")
+                print(f"\r同一時間訪問網絡的線程數動態改為 {max_request}")
 
         error_window.append(error_count)
         if len(error_window) > error_window_size:
@@ -258,11 +258,11 @@ def adjust_max_request() -> None:
 
 
 def push_message(record_name: str, live_url: str, content: str) -> None:
-    msg_title = push_message_title.strip() or "直播间状态更新通知"
+    msg_title = push_message_title.strip() or "直播間狀態更新通知"
     push_functions = {
         '微信': lambda: xizhi(xizhi_api_url, msg_title, content),
-        '钉钉': lambda: dingtalk(dingtalk_api_url, content, dingtalk_phone_num),
-        '邮箱': lambda: send_email(
+        '釘釘': lambda: dingtalk(dingtalk_api_url, content, dingtalk_phone_num),
+        '郵箱': lambda: send_email(
             email_host, login_email, email_password, sender_email, sender_name,
             to_email, msg_title, content
         ),
@@ -279,10 +279,10 @@ def push_message(record_name: str, live_url: str, content: str) -> None:
         if platform in live_status_push.upper():
             try:
                 result = func()
-                print(f'提示信息：已经将[{record_name}]直播状态消息推送至你的{platform},'
-                      f' 成功{len(result["success"])}, 失败{len(result["error"])}')
+                print(f'提示信息：已經將[{record_name}]直播狀態消息推送至你的{platform},'
+                      f' 成功{len(result["success"])}, 失敗{len(result["error"])}')
             except Exception as e:
-                print(f"直播消息推送到{platform}失败: {e}")
+                print(f"直播消息推送到{platform}失敗: {e}")
 
 
 def run_bash(command: list) -> None:
@@ -302,7 +302,7 @@ def clear_record_info(record_name: str, record_url: str) -> None:
     if record_url in url_comments and record_url in running_list:
         running_list.remove(record_url)
         monitoring -= 1
-        print(f"[{record_name}]已经从录制列表中移除")
+        print(f"[{record_name}]已經從錄製列表中移除")
 
 
 def check_subprocess(record_name: str, record_url: str, ffmpeg_command: list, save_type: str,
@@ -323,7 +323,7 @@ def check_subprocess(record_name: str, record_url: str, ffmpeg_command: list, sa
 
     while process.poll() is None:
         if record_url in url_comments or exit_recording:
-            print(f"[{record_name}]录制时已被注释,本条线程将会退出")
+            print(f"[{record_name}]錄製時已被注釋,本條線程將會退出")
             clear_record_info(record_name, record_url)
             process.terminate()
             process.wait()
@@ -342,19 +342,19 @@ def check_subprocess(record_name: str, record_url: str, ffmpeg_command: list, sa
                         threading.Thread(target=converts_mp4, args=(path, delete_origin_file)).start()
             else:
                 threading.Thread(target=converts_mp4, args=(save_file_path, delete_origin_file)).start()
-        print(f"\n{record_name} {stop_time} 直播录制完成\n")
+        print(f"\n{record_name} {stop_time} 直播錄製完成\n")
 
         if bash_file_path:
             if os_type != 'nt':
-                print(f'准备执行自定义Bash脚本，请确认脚本是否有执行权限! 路径:{bash_file_path}, 授予权限:chmod +x your_script.sh')
+                print(f'準備執行自定義Bash腳本，請確認腳本是否有執行權限! 路徑:{bash_file_path}, 授予權限:chmod +x your_script.sh')
                 bash_command = [bash_file_path, record_name.split(' ', maxsplit=1)[-1], save_file_path, save_type,
                                 split_video_by_time, ts_to_mp4]
                 run_bash(bash_command)
             else:
-                print('只支持在Linux环境下执行Bash脚本')
+                print('只支持在Linux環境下執行Bash腳本')
 
     else:
-        print(f"\n{record_name} {stop_time} 直播录制出错,返回码: {return_code}\n")
+        print(f"\n{record_name} {stop_time} 直播錄製出錯,返回碼: {return_code}\n")
 
     recording.discard(record_name)
     return False
@@ -364,7 +364,7 @@ def clean_name(input_text):
     cleaned_name = re.sub(rstr, "_", input_text.strip())
     cleaned_name = cleaned_name.replace("（", "(").replace("）", ")")
     cleaned_name = utils.remove_emojis(cleaned_name, '_').strip('_')
-    return cleaned_name or '空白昵称'
+    return cleaned_name or '空白暱稱'
 
 
 def start_record(url_data: tuple, count_variable: int = -1) -> None:
@@ -426,7 +426,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                     cookies=tiktok_cookie)
                                 port_info = stream.get_tiktok_stream_url(json_data, record_quality)
                             else:
-                                logger.error("错误信息: 网络异常，请检查网络是否能正常访问TikTok平台")
+                                logger.error("錯誤信息: 網絡異常，請檢查網絡是否能正常訪問TikTok平台")
 
                     elif record_url.find("https://live.kuaishou.com/") > -1:
                         platform = '快手直播'
@@ -480,7 +480,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                     elif record_url.find("https://www.redelight.cn/") > -1 or \
                             record_url.find("https://www.xiaohongshu.com/") > -1 or \
                             record_url.find("http://xhslink.com/") > -1:
-                        platform = '小红书直播'
+                        platform = '小紅書直播'
                         with semaphore:
                             port_info = spider.get_xhs_stream_url(
                                 record_url, proxy_addr=proxy_address, cookies=xhs_cookie)
@@ -514,16 +514,16 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                     )
                                 port_info = stream.get_stream_url(json_data, record_quality, spec=True)
                             else:
-                                logger.error("错误信息: 网络异常，请检查本网络是否能正常访问SOOP平台")
+                                logger.error("錯誤信息: 網絡異常，請檢查本網絡是否能正常訪問SOOP平台")
 
                     elif record_url.find("cc.163.com/") > -1:
-                        platform = '网易CC直播'
+                        platform = '網易CC直播'
                         with semaphore:
                             json_data = spider.get_netease_stream_data(url=record_url, cookies=netease_cookie)
                             port_info = stream.get_netease_stream_url(json_data, record_quality)
 
                     elif record_url.find("qiandurebo.com/") > -1:
-                        platform = '千度热播'
+                        platform = '千度熱播'
                         with semaphore:
                             port_info = spider.get_qiandurebo_stream_data(
                                 url=record_url, proxy_addr=proxy_address, cookies=qiandurebo_cookie)
@@ -539,10 +539,10 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                 )
                                 port_info = stream.get_stream_url(json_data, record_quality, spec=True)
                             else:
-                                logger.error("错误信息: 网络异常，请检查本网络是否能正常访问PandaTV直播平台")
+                                logger.error("錯誤信息: 網絡異常，請檢查本網絡是否能正常訪問PandaTV直播平台")
 
                     elif record_url.find("fm.missevan.com/") > -1:
-                        platform = '猫耳FM直播'
+                        platform = '貓耳FM直播'
                         with semaphore:
                             port_info = spider.get_maoerfm_stream_url(
                                 url=record_url, proxy_addr=proxy_address, cookies=maoerfm_cookie)
@@ -557,7 +557,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                     cookies=winktv_cookie)
                                 port_info = stream.get_stream_url(json_data, record_quality, spec=True)
                             else:
-                                logger.error("错误信息: 网络异常，请检查本网络是否能正常访问WinkTV直播平台")
+                                logger.error("錯誤信息: 網絡異常，請檢查本網絡是否能正常訪問WinkTV直播平台")
 
                     elif record_url.find("www.flextv.co.kr/") > -1:
                         platform = 'FlexTV'
@@ -576,7 +576,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                     )
                                 port_info = stream.get_stream_url(json_data, record_quality, spec=True)
                             else:
-                                logger.error("错误信息: 网络异常，请检查本网络是否能正常访问FlexTV直播平台")
+                                logger.error("錯誤信息: 網絡異常，請檢查本網絡是否能正常訪問FlexTV直播平台")
 
                     elif record_url.find("look.163.com/") > -1:
                         platform = 'Look直播'
@@ -604,7 +604,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                     )
 
                             else:
-                                logger.error("错误信息: 网络异常，请检查本网络是否能正常访问PopkonTV直播平台")
+                                logger.error("錯誤信息: 網絡異常，請檢查本網絡是否能正常訪問PopkonTV直播平台")
 
                     elif record_url.find("twitcasting.tv/") > -1:
                         platform = 'TwitCasting'
@@ -656,7 +656,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                 )
                                 port_info = stream.get_stream_url(json_data, record_quality, spec=True)
                             else:
-                                logger.error("错误信息: 网络异常，请检查本网络是否能正常访问TwitchTV直播平台")
+                                logger.error("錯誤信息: 網絡異常，請檢查本網絡是否能正常訪問TwitchTV直播平台")
 
                     elif record_url.find("www.liveme.com/") > -1:
                         if global_proxy or proxy_address:
@@ -665,7 +665,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                 port_info = spider.get_liveme_stream_url(
                                     url=record_url, proxy_addr=proxy_address, cookies=liveme_cookie)
                         else:
-                            logger.error("错误信息: 网络异常，请检查本网络是否能正常访问LiveMe直播平台")
+                            logger.error("錯誤信息: 網絡異常，請檢查本網絡是否能正常訪問LiveMe直播平台")
 
                     elif record_url.find("www.huajiao.com/") > -1:
                         platform = '花椒直播'
@@ -695,7 +695,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                 json_data, record_quality, url_type='flv', extra_key='url')
 
                     elif record_url.find("tlclw.com/") > -1:
-                        platform = '畅聊直播'
+                        platform = '暢聊直播'
                         with semaphore:
                             port_info = spider.get_changliao_stream_url(
                                 url=record_url, proxy_addr=proxy_address, cookies=changliao_cookie)
@@ -756,25 +756,25 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                 url=record_url, proxy_addr=proxy_address, cookies=pplive_cookie)
 
                     elif record_url.find(".6.cn/") > -1:
-                        platform = '六间房直播'
+                        platform = '六間房直播'
                         with semaphore:
                             port_info = spider.get_6room_stream_url(
                                 url=record_url, proxy_addr=proxy_address, cookies=six_room_cookie)
 
                     elif record_url.find("lehaitv.com/") > -1:
-                        platform = '乐嗨直播'
+                        platform = '樂嗨直播'
                         with semaphore:
                             port_info = spider.get_haixiu_stream_url(
                                 url=record_url, proxy_addr=proxy_address, cookies=lehaitv_cookie)
 
                     elif record_url.find("h.catshow168.com/") > -1:
-                        platform = '花猫直播'
+                        platform = '花貓直播'
                         with semaphore:
                             port_info = spider.get_pplive_stream_url(
                                 url=record_url, proxy_addr=proxy_address, cookies=huamao_cookie)
 
                     elif record_url.find(".m3u8") > -1 or record_url.find(".flv") > -1:
-                        platform = '自定义录制直播'
+                        platform = '自定義錄製直播'
                         port_info = {
                             "anchor_name": platform + '_' + str(uuid.uuid4())[:8],
                             "is_live": True,
@@ -800,16 +800,16 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                         anchor_name = port_info.get("anchor_name", '')
 
                     if not port_info.get("anchor_name", ''):
-                        print(f'序号{count_variable} 网址内容获取失败,进行重试中...获取失败的地址是:{url_data}')
+                        print(f'序號{count_variable} 網址內容獲取失敗,進行重試中...獲取失敗的地址是:{url_data}')
                         with max_request_lock:
                             error_count += 1
                             error_window.append(1)
                     else:
                         anchor_name = clean_name(anchor_name)
-                        record_name = f'序号{count_variable} {anchor_name}'
+                        record_name = f'序號{count_variable} {anchor_name}'
 
                         if record_url in url_comments:
-                            print(f"[{anchor_name}]已被注释,本条线程将会退出")
+                            print(f"[{anchor_name}]已被注釋,本條線程將會退出")
                             clear_record_info(record_name, record_url)
                             return
 
@@ -827,12 +827,12 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
 
                             if start_pushed:
                                 if over_show_push:
-                                    push_content = "直播间状态更新：[直播间名称] 直播已结束！时间：[时间]"
+                                    push_content = "直播間狀態更新：[直播間名稱] 直播已結束！時間：[時間]"
                                     if over_push_message_text:
                                         push_content = over_push_message_text
 
-                                    push_content = (push_content.replace('[直播间名称]', record_name).
-                                                    replace('[时间]', push_at))
+                                    push_content = (push_content.replace('[直播間名稱]', record_name).
+                                                    replace('[時間]', push_at))
                                     threading.Thread(
                                         target=push_message,
                                         args=(record_name, record_url, push_content.replace(r'\n', '\n')),
@@ -846,12 +846,12 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
 
                             if live_status_push and not start_pushed:
                                 if begin_show_push:
-                                    push_content = "直播间状态更新：[直播间名称] 正在直播中，时间：[时间]"
+                                    push_content = "直播間狀態更新：[直播間名稱] 正在直播中，時間：[時間]"
                                     if begin_push_message_text:
                                         push_content = begin_push_message_text
 
-                                    push_content = (push_content.replace('[直播间名称]', record_name).
-                                                    replace('[时间]', push_at))
+                                    push_content = (push_content.replace('[直播間名稱]', record_name).
+                                                    replace('[時間]', push_at))
                                     threading.Thread(
                                         target=push_message,
                                         args=(record_name, record_url, push_content.replace(r'\n', '\n')),
@@ -893,7 +893,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                     if not os.path.exists(full_path):
                                         os.makedirs(full_path)
                                 except Exception as e:
-                                    logger.error(f"错误信息: {e} 发生错误的行数: {e.__traceback__.tb_lineno}")
+                                    logger.error(f"錯誤信息: {e} 發生錯誤的行數: {e.__traceback__.tb_lineno}")
 
                                 if enable_https_recording and real_url.startswith("http://"):
                                     real_url = real_url.replace("http://", "https://")
@@ -942,7 +942,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                     'WinkTV': 'origin:https://www.winktv.co.kr',
                                     'PopkonTV': 'origin:https://www.popkontv.com',
                                     'FlexTV': 'origin:https://www.flextv.co.kr',
-                                    '千度热播': 'referer:https://qiandurebo.com',
+                                    '千度熱播': 'referer:https://qiandurebo.com',
                                     '17Live': 'referer:https://17.live/en/live/6302408',
                                     '浪Live': 'referer:https://www.lang.live',
                                 }
@@ -959,7 +959,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                 recording.add(record_name)
                                 start_record_time = datetime.datetime.now()
                                 recording_time_list[record_name] = [start_record_time, record_quality]
-                                rec_info = f"\r{anchor_name} 准备开始录制视频: {full_path}"
+                                rec_info = f"\r{anchor_name} 準備開始錄製視頻: {full_path}"
                                 if show_url:
                                     re_plat = ('WinkTV', 'PandaTV', 'ShowRoom', 'CHZZK')
                                     if platform in re_plat:
@@ -989,11 +989,11 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                             record_finished = True
                                             recording.discard(record_name)
                                             print(
-                                                f"\n{anchor_name} {time.strftime('%Y-%m-%d %H:%M:%S')} 直播录制完成\n")
+                                                f"\n{anchor_name} {time.strftime('%Y-%m-%d %H:%M:%S')} 直播錄製完成\n")
                                     except Exception as e:
                                         print(
-                                            f"\n{anchor_name} {time.strftime('%Y-%m-%d %H:%M:%S')} 直播录制出错,请检查网络\n")
-                                        logger.error(f"错误信息: {e} 发生错误的行数: {e.__traceback__.tb_lineno}")
+                                            f"\n{anchor_name} {time.strftime('%Y-%m-%d %H:%M:%S')} 直播錄製出錯,請檢查網絡\n")
+                                        logger.error(f"錯誤信息: {e} 發生錯誤的行數: {e.__traceback__.tb_lineno}")
                                         with max_request_lock:
                                             error_count += 1
                                             error_window.append(1)
@@ -1041,7 +1041,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                             return
 
                                     except subprocess.CalledProcessError as e:
-                                        logger.error(f"错误信息: {e} 发生错误的行数: {e.__traceback__.tb_lineno}")
+                                        logger.error(f"錯誤信息: {e} 發生錯誤的行數: {e.__traceback__.tb_lineno}")
                                         with max_request_lock:
                                             error_count += 1
                                             error_window.append(1)
@@ -1088,7 +1088,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                             return
 
                                     except subprocess.CalledProcessError as e:
-                                        logger.error(f"错误信息: {e} 发生错误的行数: {e.__traceback__.tb_lineno}")
+                                        logger.error(f"錯誤信息: {e} 發生錯誤的行數: {e.__traceback__.tb_lineno}")
                                         with max_request_lock:
                                             error_count += 1
                                             error_window.append(1)
@@ -1102,7 +1102,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                                           f"{name_format}.{extension}")
 
                                         if split_video_by_time:
-                                            print(f'\r{anchor_name} 准备开始录制音频: {save_file_path}')
+                                            print(f'\r{anchor_name} 準備開始錄製音頻: {save_file_path}')
 
                                             if "MP3" in video_save_type:
                                                 command = [
@@ -1158,7 +1158,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                             return
 
                                     except subprocess.CalledProcessError as e:
-                                        logger.error(f"错误信息: {e} 发生错误的行数: {e.__traceback__.tb_lineno}")
+                                        logger.error(f"錯誤信息: {e} 發生錯誤的行數: {e.__traceback__.tb_lineno}")
                                         with max_request_lock:
                                             error_count += 1
                                             error_window.append(1)
@@ -1204,7 +1204,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
 
                                         except subprocess.CalledProcessError as e:
                                             logger.error(
-                                                f"错误信息: {e} 发生错误的行数: {e.__traceback__.tb_lineno}")
+                                                f"錯誤信息: {e} 發生錯誤的行數: {e.__traceback__.tb_lineno}")
                                             with max_request_lock:
                                                 error_count += 1
                                                 error_window.append(1)
@@ -1235,7 +1235,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                                 return
 
                                         except subprocess.CalledProcessError as e:
-                                            logger.error(f"错误信息: {e} 发生错误的行数: {e.__traceback__.tb_lineno}")
+                                            logger.error(f"錯誤信息: {e} 發生錯誤的行數: {e.__traceback__.tb_lineno}")
                                             with max_request_lock:
                                                 error_count += 1
                                                 error_window.append(1)
@@ -1243,7 +1243,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                 count_time = time.time()
 
                 except Exception as e:
-                    logger.error(f"错误信息: {e} 发生错误的行数: {e.__traceback__.tb_lineno}")
+                    logger.error(f"錯誤信息: {e} 發生錯誤的行數: {e.__traceback__.tb_lineno}")
                     with max_request_lock:
                         error_count += 1
                         error_window.append(1)
@@ -1255,7 +1255,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
 
                 if error_count > 20:
                     x = x + 60
-                    print("瞬时错误太多,延迟加60秒")
+                    print("瞬時錯誤太多,延遲加60秒")
 
                 # 这里是.如果录制结束后,循环时间会暂时变成30s后检测一遍. 这样一定程度上防止主播卡顿造成少录
                 # 当30秒过后检测一遍后. 会回归正常设置的循环秒数
@@ -1272,12 +1272,12 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                 while x:
                     x = x - 1
                     if loop_time:
-                        print(f'\r{anchor_name}循环等待{x}秒 ', end="")
+                        print(f'\r{anchor_name}循環等待{x}秒 ', end="")
                     time.sleep(1)
                 if loop_time:
-                    print('\r检测直播间中...', end="")
+                    print('\r檢查直播間中...', end="")
         except Exception as e:
-            logger.error(f"错误信息: {e} 发生错误的行数: {e.__traceback__.tb_lineno}")
+            logger.error(f"錯誤信息: {e} 發生錯誤的行數: {e.__traceback__.tb_lineno}")
             with max_request_lock:
                 error_count += 1
                 error_window.append(1)
@@ -1304,7 +1304,7 @@ def backup_file(file_path: str, backup_dir_path: str, limit_counts: int = 6) -> 
             _files = _files[1:]
 
     except Exception as e:
-        logger.error(f'\r备份配置文件 {file_path} 失败：{str(e)}')
+        logger.error(f'\r備份配置文件 {file_path} 失敗：{str(e)}')
 
 
 def backup_file_start() -> None:
@@ -1326,7 +1326,7 @@ def backup_file_start() -> None:
                     url_config_md5 = new_url_config_md5
             time.sleep(600)
         except Exception as e:
-            logger.error(f"备份配置文件失败, 错误信息: {e}")
+            logger.error(f"備份配置文件失敗, 錯誤信息: {e}")
 
 
 # --------------------------检查是否存在ffmpeg-------------------------------------
@@ -1341,10 +1341,10 @@ def check_ffmpeg_existence() -> bool:
         ffmpeg_file_check = subprocess.getoutput(ffmpeg_path)
         if ffmpeg_file_check.find("run") > -1 and os.path.isfile(ffmpeg_path):
             os.environ['PATH'] += os.pathsep + os.path.dirname(os.path.abspath(ffmpeg_path))
-            # print(f"已将ffmpeg路径添加到环境变量：{ffmpeg_path}")
+            # print(f"已將ffmpeg路徑添加到環境變量：{ffmpeg_path}")
             return True
         else:
-            logger.error("未检测到ffmpeg，请确保ffmpeg位于系统路径中，或将其路径添加到环境变量。")
+            logger.error("未檢測到ffmpeg，請確保ffmpeg位於系統路徑中，或將其路徑添加到環境變量。")
             sys.exit(0)
     finally:
         dev_null.close()
@@ -1352,7 +1352,7 @@ def check_ffmpeg_existence() -> bool:
 
 
 if not check_ffmpeg_existence():
-    logger.error("缺少ffmpeg无法进行录制，程序退出")
+    logger.error("缺少ffmpeg無法進行錄製，程序退出")
     sys.exit(1)
 
 # --------------------------初始化程序-------------------------------------
@@ -1360,7 +1360,7 @@ print("-----------------------------------------------------")
 print("|                DouyinLiveRecorder                 |")
 print("-----------------------------------------------------")
 
-print(f"版本号: {version}")
+print(f"版本號: {version}")
 print("GitHub: https://github.com/ihmily/DouyinLiveRecorder")
 print(f'支持平台: {platforms}')
 print('.....................................................')
@@ -1376,16 +1376,16 @@ def read_config_value(config_parser: configparser.RawConfigParser, section: str,
     try:
 
         config_parser.read(config_file, encoding=text_encoding)
-        if '录制设置' not in config_parser.sections():
-            config_parser.add_section('录制设置')
+        if '錄製設置' not in config_parser.sections():
+            config_parser.add_section('錄製設置')
         if '推送配置' not in config_parser.sections():
             config_parser.add_section('推送配置')
         if 'Cookie' not in config_parser.sections():
             config_parser.add_section('Cookie')
         if 'Authorization' not in config_parser.sections():
             config_parser.add_section('Authorization')
-        if '账号密码' not in config_parser.sections():
-            config_parser.add_section('账号密码')
+        if '賬號密碼' not in config_parser.sections():
+            config_parser.add_section('賬號密碼')
         return config_parser.get(section, option)
     except (configparser.NoSectionError, configparser.NoOptionError):
         config_parser.set(section, option, str(default_value))
@@ -1396,8 +1396,8 @@ def read_config_value(config_parser: configparser.RawConfigParser, section: str,
 
 options = {"是": True, "否": False}
 config = configparser.RawConfigParser()
-skip_proxy_check = options.get(read_config_value(config, '录制设置', '是否跳过代理检测(是/否)', "否"), False)
-language = read_config_value(config, '录制设置', 'language(zh_cn/en)', "zh_cn")
+skip_proxy_check = options.get(read_config_value(config, '錄製設置', '是否跳過代理檢測(是/否)', "否"), False)
+language = read_config_value(config, '錄製設置', 'language(zh_cn/en)', "zh_cn")
 if language and 'en' not in language.lower():
     from i18n import translated_print
     builtins.print = translated_print
@@ -1406,14 +1406,14 @@ try:
     if skip_proxy_check:
         global_proxy = True
     else:
-        print('系统代理检测中，请耐心等待...')
+        print('系統代理檢測中，請耐心等待...')
         response_g = urllib.request.urlopen("https://www.google.com/", timeout=15)
         global_proxy = True
-        print('\r全局/规则网络代理已开启√')
+        print('\r全局/規則網絡代理已開啟√')
 except HTTPError as err:
     print(f"HTTP error occurred: {err.code} - {err.reason}")
 except URLError as err:
-    print('INFO：未检测到全局/规则网络代理，请检查代理配置（若无需录制海外直播请忽略此条提示）')
+    print('INFO：未檢測到全局/規則網絡代理，請檢查代理配置（若無需錄製海外直播請忽略此條提示）')
 except Exception as err:
     print("An unexpected error occurred:", err)
 
@@ -1430,79 +1430,79 @@ while True:
                 ini_URL_content = file.read().strip()
 
         if not ini_URL_content.strip():
-            input_url = input('请输入要录制的主播直播间网址（尽量使用PC网页端的直播间地址）:\n')
+            input_url = input('請輸入要錄製的主播直播間網址（盡量使用PC網頁端的直播間地址）:\n')
             with open(url_config_file, 'w', encoding=text_encoding) as file:
                 file.write(input_url)
     except OSError as err:
-        logger.error(f"发生 I/O 错误: {err}")
+        logger.error(f"發生 I/O 錯誤: {err}")
 
-    video_save_path = read_config_value(config, '录制设置', '直播保存路径(不填则默认)', "")
-    folder_by_author = options.get(read_config_value(config, '录制设置', '保存文件夹是否以作者区分', "是"), False)
-    folder_by_time = options.get(read_config_value(config, '录制设置', '保存文件夹是否以时间区分', "否"), False)
-    folder_by_title = options.get(read_config_value(config, '录制设置', '保存文件夹是否以标题区分', "否"), False)
-    filename_by_title = options.get(read_config_value(config, '录制设置', '保存文件名是否包含标题', "否"), False)
-    video_save_type = read_config_value(config, '录制设置', '视频保存格式ts|mkv|flv|mp4|mp3音频|m4a音频', "ts")
-    video_record_quality = read_config_value(config, '录制设置', '原画|超清|高清|标清|流畅', "原画")
-    use_proxy = options.get(read_config_value(config, '录制设置', '是否使用代理ip(是/否)', "是"), False)
-    proxy_addr_bak = read_config_value(config, '录制设置', '代理地址', "")
+    video_save_path = read_config_value(config, '錄製設置', '直播保存路徑(不填則默認)', "")
+    folder_by_author = options.get(read_config_value(config, '錄製設置', '保存文件夾是否以作者區分', "是"), False)
+    folder_by_time = options.get(read_config_value(config, '錄製設置', '保存文件夾是否以時間區分', "否"), False)
+    folder_by_title = options.get(read_config_value(config, '錄製設置', '保存文件夾是否以標題區分', "否"), False)
+    filename_by_title = options.get(read_config_value(config, '錄製設置', '保存文件名是否包含標題', "否"), False)
+    video_save_type = read_config_value(config, '錄製設置', '視頻保存格式ts|mkv|flv|mp4|mp3音频|m4a音频', "ts")
+    video_record_quality = read_config_value(config, '錄製設置', '原畫|超清|高清|標清|流暢', "原畫")
+    use_proxy = options.get(read_config_value(config, '錄製設置', '是否使用代理ip(是/否)', "是"), False)
+    proxy_addr_bak = read_config_value(config, '錄製設置', '代理地址', "")
     proxy_addr = None if not use_proxy else proxy_addr_bak
-    max_request = int(read_config_value(config, '录制设置', '同一时间访问网络的线程数', 3))
+    max_request = int(read_config_value(config, '錄製設置', '同一時間訪問網絡的線程數', 3))
     semaphore = threading.Semaphore(max_request)
-    delay_default = int(read_config_value(config, '录制设置', '循环时间(秒)', 120))
-    local_delay_default = int(read_config_value(config, '录制设置', '排队读取网址时间(秒)', 0))
-    loop_time = options.get(read_config_value(config, '录制设置', '是否显示循环秒数', "否"), False)
-    show_url = options.get(read_config_value(config, '录制设置', '是否显示直播源地址', "否"), False)
-    split_video_by_time = options.get(read_config_value(config, '录制设置', '分段录制是否开启', "否"), False)
-    enable_https_recording = options.get(read_config_value(config, '录制设置', '强制启用HTTPS录制', "否"), False)
-    disk_space_limit = float(read_config_value(config, '录制设置', '录制空间剩余阈值(gb)', 1.0))
-    split_time = str(read_config_value(config, '录制设置', '视频分段时间(秒)', 1800))
-    ts_to_mp4 = options.get(read_config_value(config, '录制设置', 'ts录制完成后自动转为mp4格式', "否"),
+    delay_default = int(read_config_value(config, '錄製設置', '循環時間(秒)', 120))
+    local_delay_default = int(read_config_value(config, '錄製設置', '排隊讀取網址時間(秒)', 0))
+    loop_time = options.get(read_config_value(config, '錄製設置', '是否顯示循環秒數', "否"), False)
+    show_url = options.get(read_config_value(config, '錄製設置', '是否顯示直播源地址', "否"), False)
+    split_video_by_time = options.get(read_config_value(config, '錄製設置', '分段錄製是否開啟', "否"), False)
+    enable_https_recording = options.get(read_config_value(config, '錄製設置', '強制啟用HTTPS錄製', "否"), False)
+    disk_space_limit = float(read_config_value(config, '錄製設置', '錄製空間剩余閾值(gb)', 1.0))
+    split_time = str(read_config_value(config, '錄製設置', '視頻分段時間(秒)', 1800))
+    ts_to_mp4 = options.get(read_config_value(config, '錄製設置', 'ts錄製完成後自動轉為mp4格式', "否"),
                             False)
-    delete_origin_file = options.get(read_config_value(config, '录制设置', '追加格式后删除原文件', "否"), False)
-    create_time_file = options.get(read_config_value(config, '录制设置', '生成时间字幕文件', "否"), False)
-    is_run_bash = options.get(read_config_value(config, '录制设置', '是否录制完成后执行bash脚本', "否"), False)
-    bash_path = read_config_value(config, '录制设置', 'bash脚本路径', "") if is_run_bash else None
+    delete_origin_file = options.get(read_config_value(config, '錄製設置', '追加格式後刪除原文件', "否"), False)
+    create_time_file = options.get(read_config_value(config, '錄製設置', '生成時間字幕文件', "否"), False)
+    is_run_bash = options.get(read_config_value(config, '錄製設置', '是否錄製完成後執行bash腳本', "否"), False)
+    bash_path = read_config_value(config, '錄製設置', 'bash腳本路徑', "") if is_run_bash else None
     enable_proxy_platform = read_config_value(
-        config, '录制设置', '使用代理录制的平台(逗号分隔)',
+        config, '錄製設置', '使用代理錄製的平台(逗號分隔)',
         'tiktok, soop, pandalive, winktv, flextv, popkontv, twitch, liveme, showroom, chzzk')
     enable_proxy_platform_list = enable_proxy_platform.replace('，', ',').split(',') if enable_proxy_platform else None
-    extra_enable_proxy = read_config_value(config, '录制设置', '额外使用代理录制的平台(逗号分隔)', '')
+    extra_enable_proxy = read_config_value(config, '錄製設置', '額外使用代理錄製的平台(逗號分隔)', '')
     extra_enable_proxy_platform_list = extra_enable_proxy.replace('，', ',').split(',') if extra_enable_proxy else None
-    live_status_push = read_config_value(config, '推送配置', '直播状态推送渠道', "")
-    dingtalk_api_url = read_config_value(config, '推送配置', '钉钉推送接口链接', "")
-    xizhi_api_url = read_config_value(config, '推送配置', '微信推送接口链接', "")
-    bark_msg_api = read_config_value(config, '推送配置', 'bark推送接口链接', "")
-    bark_msg_level = read_config_value(config, '推送配置', 'bark推送中断级别', "active")
-    bark_msg_ring = read_config_value(config, '推送配置', 'bark推送铃声', "bell")
-    dingtalk_phone_num = read_config_value(config, '推送配置', '钉钉通知@对象(填手机号)', "")
+    live_status_push = read_config_value(config, '推送配置', '直播狀態推送渠道', "")
+    dingtalk_api_url = read_config_value(config, '推送配置', '釘釘推送接口鏈接', "")
+    xizhi_api_url = read_config_value(config, '推送配置', '微信推送接口鏈接', "")
+    bark_msg_api = read_config_value(config, '推送配置', 'bark推送接口鏈接', "")
+    bark_msg_level = read_config_value(config, '推送配置', 'bark推送中斷級別', "active")
+    bark_msg_ring = read_config_value(config, '推送配置', 'bark推送鈴聲', "bell")
+    dingtalk_phone_num = read_config_value(config, '推送配置', '釘釘通知@對象(填手機號)', "")
     tg_token = read_config_value(config, '推送配置', 'tgapi令牌', "")
-    tg_chat_id = read_config_value(config, '推送配置', 'tg聊天id(个人或者群组id)', "")
-    email_host = read_config_value(config, '推送配置', 'SMTP邮件服务器', "")
-    login_email = read_config_value(config, '推送配置', '邮箱登录账号', "")
-    email_password = read_config_value(config, '推送配置', '发件人密码(授权码)', "")
-    sender_email = read_config_value(config, '推送配置', '发件人邮箱', "")
-    sender_name = read_config_value(config, '推送配置', '发件人显示昵称', "")
-    to_email = read_config_value(config, '推送配置', '收件人邮箱', "")
+    tg_chat_id = read_config_value(config, '推送配置', 'tg聊天id(個人或者群組id)', "")
+    email_host = read_config_value(config, '推送配置', 'SMTP郵件服務器', "")
+    login_email = read_config_value(config, '推送配置', '郵箱登錄帳號', "")
+    email_password = read_config_value(config, '推送配置', '發件人密碼(授權碼)', "")
+    sender_email = read_config_value(config, '推送配置', '發件人郵箱', "")
+    sender_name = read_config_value(config, '推送配置', '發件人顯示暱稱', "")
+    to_email = read_config_value(config, '推送配置', '收件人郵箱', "")
     ntfy_api = read_config_value(config, '推送配置', 'ntfy推送地址', "")
-    ntfy_tags = read_config_value(config, '推送配置', 'ntfy推送标签', "tada")
-    ntfy_email = read_config_value(config, '推送配置', 'ntfy推送邮箱', "")
-    push_message_title = read_config_value(config, '推送配置', '自定义推送标题', "直播间状态更新通知")
-    begin_push_message_text = read_config_value(config, '推送配置', '自定义开播推送内容', "")
-    over_push_message_text = read_config_value(config, '推送配置', '自定义关播推送内容', "")
-    disable_record = options.get(read_config_value(config, '推送配置', '只推送通知不录制(是/否)', "否"), False)
-    push_check_seconds = int(read_config_value(config, '推送配置', '直播推送检测频率(秒)', 1800))
-    begin_show_push = options.get(read_config_value(config, '推送配置', '开播推送开启(是/否)', "是"), True)
-    over_show_push = options.get(read_config_value(config, '推送配置', '关播推送开启(是/否)', "否"), False)
-    sooplive_username = read_config_value(config, '账号密码', 'sooplive账号', '')
-    sooplive_password = read_config_value(config, '账号密码', 'sooplive密码', '')
-    flextv_username = read_config_value(config, '账号密码', 'flextv账号', '')
-    flextv_password = read_config_value(config, '账号密码', 'flextv密码', '')
-    popkontv_username = read_config_value(config, '账号密码', 'popkontv账号', '')
-    popkontv_partner_code = read_config_value(config, '账号密码', 'partner_code', 'P-00001')
-    popkontv_password = read_config_value(config, '账号密码', 'popkontv密码', '')
-    twitcasting_account_type = read_config_value(config, '账号密码', 'twitcasting账号类型', 'normal')
-    twitcasting_username = read_config_value(config, '账号密码', 'twitcasting账号', '')
-    twitcasting_password = read_config_value(config, '账号密码', 'twitcasting密码', '')
+    ntfy_tags = read_config_value(config, '推送配置', 'ntfy推送標籤', "tada")
+    ntfy_email = read_config_value(config, '推送配置', 'ntfy推送郵箱', "")
+    push_message_title = read_config_value(config, '推送配置', '自定義推送標題', "直播間狀態更新通知")
+    begin_push_message_text = read_config_value(config, '推送配置', '自定義開播推送內容', "")
+    over_push_message_text = read_config_value(config, '推送配置', '自定義關播推送內容', "")
+    disable_record = options.get(read_config_value(config, '推送配置', '只推送通知不錄製(是/否)', "否"), False)
+    push_check_seconds = int(read_config_value(config, '推送配置', '直播推送檢測頻率(秒)', 1800))
+    begin_show_push = options.get(read_config_value(config, '推送配置', '開播推送開啟(是/否)', "是"), True)
+    over_show_push = options.get(read_config_value(config, '推送配置', '關播推送開啟(是/否)', "否"), False)
+    sooplive_username = read_config_value(config, '賬號密碼', 'sooplive帳號', '')
+    sooplive_password = read_config_value(config, '賬號密碼', 'sooplive密碼', '')
+    flextv_username = read_config_value(config, '賬號密碼', 'flextv帳號', '')
+    flextv_password = read_config_value(config, '賬號密碼', 'flextv密碼', '')
+    popkontv_username = read_config_value(config, '賬號密碼', 'popkontv帳號', '')
+    popkontv_partner_code = read_config_value(config, '賬號密碼', 'partner_code', 'P-00001')
+    popkontv_password = read_config_value(config, '賬號密碼', 'popkontv密碼', '')
+    twitcasting_account_type = read_config_value(config, '賬號密碼', 'twitcasting帳號類型', 'normal')
+    twitcasting_username = read_config_value(config, '賬號密碼', 'twitcasting帳號', '')
+    twitcasting_password = read_config_value(config, '賬號密碼', 'twitcasting密碼', '')
     popkontv_access_token = read_config_value(config, 'Authorization', 'popkontv_token', '')
     dy_cookie = read_config_value(config, 'Cookie', '抖音cookie', '')
     ks_cookie = read_config_value(config, 'Cookie', '快手cookie', '')
@@ -1511,14 +1511,14 @@ while True:
     douyu_cookie = read_config_value(config, 'Cookie', '斗鱼cookie', '')
     yy_cookie = read_config_value(config, 'Cookie', 'yy_cookie', '')
     bili_cookie = read_config_value(config, 'Cookie', 'B站cookie', '')
-    xhs_cookie = read_config_value(config, 'Cookie', '小红书cookie', '')
+    xhs_cookie = read_config_value(config, 'Cookie', '小紅書cookie', '')
     bigo_cookie = read_config_value(config, 'Cookie', 'bigo_cookie', '')
     blued_cookie = read_config_value(config, 'Cookie', 'blued_cookie', '')
     sooplive_cookie = read_config_value(config, 'Cookie', 'sooplive_cookie', '')
     netease_cookie = read_config_value(config, 'Cookie', 'netease_cookie', '')
-    qiandurebo_cookie = read_config_value(config, 'Cookie', '千度热播_cookie', '')
+    qiandurebo_cookie = read_config_value(config, 'Cookie', '千度熱播_cookie', '')
     pandatv_cookie = read_config_value(config, 'Cookie', 'pandatv_cookie', '')
-    maoerfm_cookie = read_config_value(config, 'Cookie', '猫耳fm_cookie', '')
+    maoerfm_cookie = read_config_value(config, 'Cookie', '貓耳fm_cookie', '')
     winktv_cookie = read_config_value(config, 'Cookie', 'winktv_cookie', '')
     flextv_cookie = read_config_value(config, 'Cookie', 'flextv_cookie', '')
     look_cookie = read_config_value(config, 'Cookie', 'look_cookie', '')
@@ -1546,7 +1546,7 @@ while True:
     lehaitv_cookie = read_config_value(config, 'Cookie', 'lehaitv_cookie', '')
     huamao_cookie = read_config_value(config, 'Cookie', 'huamao_cookie', '')
 
-    video_save_type_list = ("FLV", "MKV", "TS", "MP4", "MP3音频", "M4A音频")
+    video_save_type_list = ("FLV", "MKV", "TS", "MP4", "MP3音頻", "M4A音頻")
     if video_save_type and video_save_type.upper() in video_save_type_list:
         video_save_type = video_save_type.upper()
     else:
@@ -1556,8 +1556,8 @@ while True:
     if utils.check_disk_capacity(check_path, show=first_run) < disk_space_limit:
         exit_recording = True
         if not recording:
-            logger.warning(f"Disk space remaining is below {disk_space_limit} GB. "
-                           f"Exiting program due to the disk space limit being reached.")
+            logger.warning(f"磁碟空間剩餘低於 {disk_space_limit} GB。"
+                           f"由於磁碟空間限制，程序即將退出。")
             sys.exit(-1)
 
     def contains_url(string: str) -> bool:
@@ -1603,8 +1603,8 @@ while True:
                 else:
                     quality, url, name = split_line
 
-                if quality not in ("原画", "蓝光", "超清", "高清", "标清", "流畅"):
-                    quality = '原画'
+                if quality not in ("原畫", "藍光", "超清", "高", "標清", "流暢"):
+                    quality = '原畫'
 
                 url = 'https://' + url if '://' not in url else url
                 url_host = url.split('/')[2]
@@ -1703,7 +1703,7 @@ while True:
                         url_tuples_list.append(new_line)
                 else:
                     if not origin_line.startswith('#'):
-                        print(f"\r{origin_line} 本行包含未知链接.此条跳过")
+                        print(f"\r{origin_line} 本行包含未知鏈接.此條跳過")
                         update_file(url_config_file, old_str=origin_line, new_str=origin_line, start_str='#')
 
         while len(need_update_line_list):
@@ -1728,7 +1728,7 @@ while True:
                     continue
 
                 if url_tuple[1] not in running_list:
-                    print(f"\r{'新增' if not first_start else '传入'}地址: {url_tuple[1]}")
+                    print(f"\r{'新增' if not first_start else '傳入'}地址: {url_tuple[1]}")  # 新增或傳入地址
                     monitoring += 1
                     args = [url_tuple, monitoring]
                     create_var[f'thread_{monitoring}'] = threading.Thread(target=start_record, args=args)
@@ -1740,7 +1740,7 @@ while True:
         first_start = False
 
     except Exception as err:
-        logger.error(f"错误信息: {err} 发生错误的行数: {err.__traceback__.tb_lineno}")
+        logger.error(f"錯誤信息: {err} 發生錯誤的行數: {err.__traceback__.tb_lineno}")  # 錯誤信息: {err} 發生錯誤的行數: {err.__traceback__.tb_lineno}
 
     if first_run:
         t = threading.Thread(target=display_info, args=(), daemon=True)
