@@ -2,10 +2,10 @@
 
 """
 Author: Hmily
-GitHub: https://github.com/ihmily
+GitHub: https://github.com/SAOJSM
 Date: 2023-09-03 19:18:36
-Update: 2024-10-23 23:37:12
-Copyright (c) 2023-2024 by Hmily, All Rights Reserved.
+Update: 2024-11-11 16:01:00
+Copyright (c) 2023-2024 by SAOJSM, All Rights Reserved.
 """
 from typing import Dict, Any
 import json
