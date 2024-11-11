@@ -6,7 +6,7 @@ GitHub: https://github.com/ihmily
 Date: 2023-07-15 23:15:00
 Update: 2024-10-27 17:15:00
 Copyright (c) 2023-2024 by Hmily, All Rights Reserved.
-Function: Get live stream data.
+Function: 獲取直播流數據。
 """
 import base64
 import hashlib
@@ -32,7 +32,7 @@ def get_douyin_stream_url(json_data: dict, video_quality: str) -> dict:
         "is_live": False,
     }
 
-    status = json_data.get("status", 4)  # 直播状态 2 是正在直播、4 是未开播
+    status = json_data.get("status", 4)  # 直播狀態 2 是正在直播、4 是未開播
 
     if status == 2:
         stream_url = json_data['stream_url']
@@ -45,7 +45,7 @@ def get_douyin_stream_url(json_data: dict, video_quality: str) -> dict:
             flv_url_list.append(flv_url_list[-1])
             m3u8_url_list.append(m3u8_url_list[-1])
 
-        video_qualities = {"原画": 0, "蓝光": 0, "超清": 1, "高清": 2, "标清": 3, "流畅": 4}
+        video_qualities = {"原畫": 0, "藍光": 0, "超清": 1, "高清": 2, "標清": 3, "流暢": 4}
         quality_index = video_qualities.get(video_quality)
         m3u8_url = m3u8_url_list[quality_index]
         flv_url = flv_url_list[quality_index]
@@ -99,7 +99,7 @@ def get_tiktok_stream_url(json_data: dict, video_quality: str) -> dict:
             flv_url_list.append(flv_url_list[-1])
         while len(m3u8_url_list) < 5:
             m3u8_url_list.append(m3u8_url_list[-1])
-        video_qualities = {"原画": 0, "蓝光": 0, "超清": 1, "高清": 2, "标清": 3, '流畅': 4}
+        video_qualities = {"原畫": 0, "藍光": 0, "超清": 1, "高清": 2, "標清": 3, '流暢': 4}
         quality_index = video_qualities.get(video_quality)
         result['title'] = live_room['liveRoom']['title']
         result['flv_url'] = flv_url_list[quality_index]['url']
@@ -122,7 +122,7 @@ def get_kuaishou_stream_url(json_data: dict, video_quality: str) -> dict:
     }
 
     if live_status:
-        quality_mapping = {'原画': 0, '蓝光': 0, '超清': 1, '高清': 2, '标清': 3, '流畅': 4}
+        quality_mapping = {'原畫': 0, '藍光': 0, '超清': 1, '高清': 2, '標清': 3, '流暢': 4}
 
         if video_quality in quality_mapping:
 
@@ -173,22 +173,22 @@ def get_huya_stream_url(json_data: dict, video_quality: str) -> dict:
             params_t = 100
             sdk_version = 2403051612
 
-            # sdk_id是13位数毫秒级时间戳
+            # sdk_id是13位數毫秒級時間戳
             t13 = int(time.time()) * 1000
             sdk_sid = t13
 
-            # 计算uuid和uid参数值
+            # 計算uuid和uid參數值
             init_uuid = (int(t13 % 10 ** 10 * 1000) + int(1000 * random.random())) % 4294967295  # 直接初始化
-            uid = random.randint(1400000000000, 1400009999999)  # 经过测试uid也可以使用init_uuid代替
-            seq_id = uid + sdk_sid  # 移动端请求的直播流地址中包含seqId参数
+            uid = random.randint(1400000000000, 1400009999999)  # 經過測試uid也可以使用init_uuid代替
+            seq_id = uid + sdk_sid  # 移動端請求的直播流地址中包含seqId參數
 
-            # 计算ws_time参数值(16进制) 可以是当前毫秒时间戳，当然也可以直接使用url_query['wsTime'][0]
-            # 原始最大误差不得慢240000毫秒
+            # 計算ws_time參數值(16進制) 可以是當前毫秒時間戳，當然也可以直接使用url_query['wsTime'][0]
+            # 原始最大誤差不得慢240000毫秒
             target_unix_time = (t13 + 110624) // 1000
             ws_time = f"{target_unix_time:x}".lower()
 
-            # fm参数值是经过url编码然后base64编码得到的，解码结果类似 DWq8BcJ3h6DJt6TY_$0_$1_$2_$3
-            # 具体细节在上面js中查看，大概在32657行代码开始，有base64混淆代码请自行替换
+            # fm參數值是經過url編碼然後base64編碼得到的，解碼結果類似 DWq8BcJ3h6DJt6TY_$0_$1_$2_$3
+            # 具體細節在上面js中查看，大概在32657行代碼開始，有base64混淆代碼請自行替換
             url_query = urllib.parse.parse_qs(old_anti_code)
             ws_secret_pf = base64.b64decode(urllib.parse.unquote(url_query['fm'][0]).encode()).decode().split("_")[0]
             ws_secret_hash = hashlib.md5(f'{seq_id}|{url_query["ctype"][0]}|{params_t}'.encode()).hexdigest()
@@ -207,7 +207,7 @@ def get_huya_stream_url(json_data: dict, video_quality: str) -> dict:
         m3u8_url = f'{hls_url}/{stream_name}.{hls_url_suffix}?{new_anti_code}&ratio='
 
         quality_list = flv_anti_code.split('&exsphd=')
-        if len(quality_list) > 1 and video_quality not in ["原画", "蓝光"]:
+        if len(quality_list) > 1 and video_quality not in ["原畫", "藍光"]:
             pattern = r"(?<=264_)\d+"
             quality_list = list(re.findall(pattern, quality_list[1]))[::-1]
             while len(quality_list) < 5:
@@ -216,13 +216,13 @@ def get_huya_stream_url(json_data: dict, video_quality: str) -> dict:
             video_quality_options = {
                 "超清": quality_list[0],
                 "高清": quality_list[1],
-                "标清": quality_list[2],
-                "流畅": quality_list[3]
+                "標清": quality_list[2],
+                "流暢": quality_list[3]
             }
 
             if video_quality not in video_quality_options:
                 raise ValueError(
-                    f"Invalid video quality. Available options are: {', '.join(video_quality_options.keys())}")
+                    f"無效的視頻質量。可用選項為: {', '.join(video_quality_options.keys())}")
 
             flv_url = flv_url + str(video_quality_options[video_quality])
             m3u8_url = m3u8_url + str(video_quality_options[video_quality])
@@ -241,12 +241,12 @@ def get_douyu_stream_url(json_data: dict, video_quality: str, cookies: str, prox
         return json_data
 
     video_quality_options = {
-        "原画": '0',
-        "蓝光": '0',
+        "原畫": '0',
+        "藍光": '0',
         "超清": '3',
         "高清": '2',
-        "标清": '1',
-        "流畅": '1'
+        "標清": '1',
+        "流暢": '1'
     }
 
     rid = str(json_data["room_id"])
@@ -292,12 +292,12 @@ def get_bilibili_stream_url(json_data: dict, video_quality: str, proxy_addr: str
     room_url = json_data['room_url']
 
     video_quality_options = {
-        "原画": '10000',
-        "蓝光": '400',
+        "原畫": '10000',
+        "藍光": '400',
         "超清": '250',
         "高清": '150',
-        "标清": '80',
-        "流畅": '80'
+        "標清": '80',
+        "流暢": '80'
     }
 
     select_quality = video_quality_options[video_quality]
@@ -320,7 +320,7 @@ def get_netease_stream_url(json_data: dict, video_quality: str) -> dict:
     sorted_keys = [key for key in order if key in stream_list]
     while len(sorted_keys) < 5:
         sorted_keys.append(sorted_keys[-1])
-    quality_list = {'原画': 0, '蓝光': 0, '超清': 1, '高清': 2, '标清': 3, '流畅': 4}
+    quality_list = {'原畫': 0, '藍光': 0, '超清': 1, '高清': 2, '標清': 3, '流暢': 4}
     selected_quality = sorted_keys[quality_list[video_quality]]
     flv_url_list = stream_list[selected_quality]['cdn']
     selected_cdn = list(flv_url_list.keys())[0]
@@ -340,7 +340,7 @@ def get_stream_url(json_data: dict, video_quality: str, url_type: str = 'm3u8', 
         return json_data
 
     play_url_list = json_data['play_url_list']
-    quality_list = {'原画': 0, '蓝光': 0, '超清': 1, '高清': 2, '标清': 3, '流畅': 4}
+    quality_list = {'原畫': 0, '藍光': 0, '超清': 1, '高清': 2, '標清': 3, '流暢': 4}
     while len(play_url_list) < 5:
         play_url_list.append(play_url_list[-1])
 
