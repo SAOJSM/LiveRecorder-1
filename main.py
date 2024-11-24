@@ -4,7 +4,7 @@
 Author: SAOJSM
 GitHub: https://github.com/SAOJSM
 Date: 2023-07-17 23:52:05
-Update: 2024-11-25 01:11:00
+Update: 2024-11-10 23:00:00
 Copyright (c) 2023-2024 by SAOJSM, All Rights Reserved.
 Function: Record live stream video.
 """
@@ -249,7 +249,7 @@ def adjust_max_request() -> None:
 
             if pre_max_request != max_request:
                 pre_max_request = max_request
-                print(f"\r同一時間訪問網路的線程���動態改為 {max_request}")
+                print(f"\r同一時間訪問網路的線程數動態改為 {max_request}")
 
         error_window.append(error_count)
         if len(error_window) > error_window_size:
@@ -314,7 +314,7 @@ def check_subprocess(record_name: str, record_url: str, ffmpeg_command: list, sa
 
     subs_file_path = save_file_path.rsplit('.', maxsplit=1)[0]
     subs_thread_name = f'subs_{Path(subs_file_path).name}'
-    if create_time_file and not split_video_by_time and '音频' not in save_type:
+    if create_time_file and not split_video_by_time and '��频' not in save_type:
         create_var[subs_thread_name] = threading.Thread(
             target=generate_subtitles, args=(record_name, subs_file_path)
         )
@@ -429,7 +429,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                 logger.error("錯誤訊息: 網路異常，請檢查網路是否能正常訪問TikTok平台")
 
                     elif record_url.find("https://live.kuaishou.com/") > -1:
-                        platform = '快手直���'
+                        platform = '快手直播'
                         with semaphore:
                             json_data = spider.get_kuaishou_stream_data(
                                 url=record_url,
@@ -1307,6 +1307,7 @@ def backup_file(file_path: str, backup_dir_path: str, limit_counts: int = 6) -> 
         logger.error(f'\r備份配置文件 {file_path} 失敗：{str(e)}')
 
 
+
 def backup_file_start() -> None:
     config_md5 = ''
     url_config_md5 = ''
@@ -1496,7 +1497,7 @@ while True:
     sooplive_password = read_config_value(config, '帳號密碼', 'sooplive密碼', '')
     flextv_username = read_config_value(config, '帳號密碼', 'flextv帳號', '')
     flextv_password = read_config_value(config, '帳號密碼', 'flextv密碼', '')
-    popkontv_username = read_config_value(config, '��號密碼', 'popkontv帳號', '')
+    popkontv_username = read_config_value(config, '帳號密碼', 'popkontv帳號', '')
     popkontv_partner_code = read_config_value(config, '帳號密碼', 'partner_code', 'P-00001')
     popkontv_password = read_config_value(config, '帳號密碼', 'popkontv密碼', '')
     twitcasting_account_type = read_config_value(config, '帳號密碼', 'twitcasting帳號類型', 'normal')
