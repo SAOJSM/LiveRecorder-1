@@ -38,7 +38,7 @@ from msg_push import (
 version = "v4.0.1"
 platforms = ("\n國內站點：抖音|快手|虎牙|斗魚|YY|B站|小紅書|bigo|blued|網易CC|千度熱播|貓耳FM|Look|TwitCasting|百度|微博|"
              "酷狗|花椒|流星|Acfun|暢聊|映客|音播|知乎|嗨秀|VV星球|17Live|浪Live|漂漂|六間房|樂嗨|花貓"
-             "\n海外站點：TikTok|SOOP|PandaTV|WinkTV|FlexTV|PopkonTV|TwitchTV|LiveMe|ShowRoom|CHZZK")
+             "\n海外��點：TikTok|SOOP|PandaTV|WinkTV|FlexTV|PopkonTV|TwitchTV|LiveMe|ShowRoom|CHZZK")
 
 recording = set()
 error_count = 0
@@ -91,12 +91,12 @@ def display_info() -> None:
             if Path(sys.executable).name != 'pythonw.exe':
                 os.system(clear_command)
             print(f"\r共監測{monitoring}個直播中", end=" | ")
-            print(f"同一時間訪問網絡的線程數: {max_request}", end=" | ")
+            print(f"同一時間訪問網路的線程數: {max_request}", end=" | ")
             print(f"是否開啟代理錄製: {'是' if use_proxy else '否'}", end=" | ")
             if split_video_by_time:
                 print(f"錄製分段開啟: {split_time}秒", end=" | ")
             print(f"是否生成時間文件: {'是' if create_time_file else '否'}", end=" | ")
-            print(f"錄製視頻質量為: {video_record_quality}", end=" | ")
+            print(f"錄製視頻解析度為: {video_record_quality}", end=" | ")
             print(f"錄製視頻格式為: {video_save_type}", end=" | ")
             print(f"目前瞬時錯誤數為: {error_count}", end=" | ")
             now = time.strftime("%H:%M:%S", time.localtime())
@@ -122,7 +122,7 @@ def display_info() -> None:
                 print("x" * 60)
                 start_display_time = now_time
         except Exception as e:
-            logger.error(f"錯誤信息: {e} 發生錯誤的行數: {e.__traceback__.tb_lineno}")
+            logger.error(f"錯誤訊息: {e} 發生錯誤的行數: {e.__traceback__.tb_lineno}")
 
 
 def update_file(file_path: str, old_str: str, new_str: str, start_str: str = None) -> str | None:
@@ -140,7 +140,7 @@ def update_file(file_path: str, old_str: str, new_str: str, start_str: str = Non
                     if text_line not in file_data:
                         file_data.append(text_line)
             except RuntimeError as e:
-                logger.error(f"錯誤信息: {e} 發生錯誤的行數: {e.__traceback__.tb_lineno}")
+                logger.error(f"錯誤訊息: {e} 發生錯誤的行數: {e.__traceback__.tb_lineno}")
                 if ini_URL_content:
                     with open(file_path, "w", encoding=text_encoding) as f2:
                         f2.write(ini_URL_content)
@@ -249,7 +249,7 @@ def adjust_max_request() -> None:
 
             if pre_max_request != max_request:
                 pre_max_request = max_request
-                print(f"\r同一時間訪問網絡的線程數動態改為 {max_request}")
+                print(f"\r同一時間訪問網路的線程數動態改為 {max_request}")
 
         error_window.append(error_count)
         if len(error_window) > error_window_size:
@@ -323,7 +323,7 @@ def check_subprocess(record_name: str, record_url: str, ffmpeg_command: list, sa
 
     while process.poll() is None:
         if record_url in url_comments or exit_recording:
-            print(f"[{record_name}]錄製時已被注釋,本條線程將會退出")
+            print(f"[{record_name}]錄製時已被註解,本條線程將會退出")
             clear_record_info(record_name, record_url)
             process.terminate()
             process.wait()
@@ -426,7 +426,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                     cookies=tiktok_cookie)
                                 port_info = stream.get_tiktok_stream_url(json_data, record_quality)
                             else:
-                                logger.error("錯誤信息: 網絡異常，請檢查網絡是否能正常訪問TikTok平台")
+                                logger.error("錯誤訊息: 網路異常，請檢查網路是否能正常訪問TikTok平台")
 
                     elif record_url.find("https://live.kuaishou.com/") > -1:
                         platform = '快手直播'
@@ -440,7 +440,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                     elif record_url.find("https://www.huya.com/") > -1:
                         platform = '虎牙直播'
                         with semaphore:
-                            if record_quality not in ['原画', '蓝光', '超清']:
+                            if record_quality not in ['原畫', '藍光', '超清']:
                                 json_data = spider.get_huya_stream_data(
                                     url=record_url,
                                     proxy_addr=proxy_address,
@@ -514,7 +514,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                     )
                                 port_info = stream.get_stream_url(json_data, record_quality, spec=True)
                             else:
-                                logger.error("錯誤信息: 網絡異常，請檢查本網絡是否能正常訪問SOOP平台")
+                                logger.error("錯誤訊息: 網路異常，請檢查本網路是否能正常訪問SOOP平台")
 
                     elif record_url.find("cc.163.com/") > -1:
                         platform = '網易CC直播'
@@ -539,7 +539,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                 )
                                 port_info = stream.get_stream_url(json_data, record_quality, spec=True)
                             else:
-                                logger.error("錯誤信息: 網絡異常，請檢查本網絡是否能正常訪問PandaTV直播平台")
+                                logger.error("錯誤訊息: 網路異常，請檢查本網路是否能正常訪問PandaTV直播平台")
 
                     elif record_url.find("fm.missevan.com/") > -1:
                         platform = '貓耳FM直播'
@@ -557,7 +557,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                     cookies=winktv_cookie)
                                 port_info = stream.get_stream_url(json_data, record_quality, spec=True)
                             else:
-                                logger.error("錯誤信息: 網絡異常，請檢查本網絡是否能正常訪問WinkTV直播平台")
+                                logger.error("錯誤訊息: 網路異常，請檢查本網路是否能正常訪問WinkTV直播平台")
 
                     elif record_url.find("www.flextv.co.kr/") > -1:
                         platform = 'FlexTV'
@@ -576,7 +576,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                     )
                                 port_info = stream.get_stream_url(json_data, record_quality, spec=True)
                             else:
-                                logger.error("錯誤信息: 網絡異常，請檢查本網絡是否能正常訪問FlexTV直播平台")
+                                logger.error("錯誤訊息: 網路異常，請檢查本網路是否能正常訪問FlexTV直播平台")
 
                     elif record_url.find("look.163.com/") > -1:
                         platform = 'Look直播'
@@ -604,7 +604,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                     )
 
                             else:
-                                logger.error("錯誤信息: 網絡異常，請檢查本網絡是否能正常訪問PopkonTV直播平台")
+                                logger.error("錯誤訊息: 網路異常，請檢查本網路是否能正常訪問PopkonTV直播平台")
 
                     elif record_url.find("twitcasting.tv/") > -1:
                         platform = 'TwitCasting'
@@ -656,7 +656,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                 )
                                 port_info = stream.get_stream_url(json_data, record_quality, spec=True)
                             else:
-                                logger.error("錯誤信息: 網絡異常，請檢查本網絡是否能正常訪問TwitchTV直播平台")
+                                logger.error("錯誤訊息: 網路異常，請檢查本網路是否能正常訪問TwitchTV直播平台")
 
                     elif record_url.find("www.liveme.com/") > -1:
                         if global_proxy or proxy_address:
@@ -665,7 +665,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                 port_info = spider.get_liveme_stream_url(
                                     url=record_url, proxy_addr=proxy_address, cookies=liveme_cookie)
                         else:
-                            logger.error("錯誤信息: 網絡異常，請檢查本網絡是否能正常訪問LiveMe直播平台")
+                            logger.error("錯誤訊息: 網路異常，請檢查本網路是否能正常訪問LiveMe直播平台")
 
                     elif record_url.find("www.huajiao.com/") > -1:
                         platform = '花椒直播'
@@ -809,7 +809,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                         record_name = f'序號{count_variable} {anchor_name}'
 
                         if record_url in url_comments:
-                            print(f"[{anchor_name}]已被注釋,本條線程將會退出")
+                            print(f"[{anchor_name}]已被註解,本條線程將會退出")
                             clear_record_info(record_name, record_url)
                             return
 
@@ -893,7 +893,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                     if not os.path.exists(full_path):
                                         os.makedirs(full_path)
                                 except Exception as e:
-                                    logger.error(f"錯誤信息: {e} 發生錯誤的行數: {e.__traceback__.tb_lineno}")
+                                    logger.error(f"錯誤訊息: {e} 發生錯誤的行數: {e.__traceback__.tb_lineno}")
 
                                 if enable_https_recording and real_url.startswith("http://"):
                                     real_url = real_url.replace("http://", "https://")
@@ -959,7 +959,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                 recording.add(record_name)
                                 start_record_time = datetime.datetime.now()
                                 recording_time_list[record_name] = [start_record_time, record_quality]
-                                rec_info = f"\r{anchor_name} 準備開始錄製視頻: {full_path}"
+                                rec_info = f"\r{anchor_name} ��備開始錄製視頻: {full_path}"
                                 if show_url:
                                     re_plat = ('WinkTV', 'PandaTV', 'ShowRoom', 'CHZZK')
                                     if platform in re_plat:
@@ -993,7 +993,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                     except Exception as e:
                                         print(
                                             f"\n{anchor_name} {time.strftime('%Y-%m-%d %H:%M:%S')} 直播錄製出錯,請檢查網絡\n")
-                                        logger.error(f"錯誤信息: {e} 發生錯誤的行數: {e.__traceback__.tb_lineno}")
+                                        logger.error(f"錯誤訊息: {e} 發生錯誤的行數: {e.__traceback__.tb_lineno}")
                                         with max_request_lock:
                                             error_count += 1
                                             error_window.append(1)
@@ -1041,7 +1041,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                             return
 
                                     except subprocess.CalledProcessError as e:
-                                        logger.error(f"錯誤信息: {e} 發生錯誤的行數: {e.__traceback__.tb_lineno}")
+                                        logger.error(f"錯誤訊息: {e} 發生錯誤的行數: {e.__traceback__.tb_lineno}")
                                         with max_request_lock:
                                             error_count += 1
                                             error_window.append(1)
@@ -1088,7 +1088,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                             return
 
                                     except subprocess.CalledProcessError as e:
-                                        logger.error(f"錯誤信息: {e} 發生錯誤的行數: {e.__traceback__.tb_lineno}")
+                                        logger.error(f"錯誤訊息: {e} 發生錯誤的行數: {e.__traceback__.tb_lineno}")
                                         with max_request_lock:
                                             error_count += 1
                                             error_window.append(1)
@@ -1158,7 +1158,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                             return
 
                                     except subprocess.CalledProcessError as e:
-                                        logger.error(f"錯誤信息: {e} 發生錯誤的行數: {e.__traceback__.tb_lineno}")
+                                        logger.error(f"錯誤訊息: {e} 發生錯誤的行數: {e.__traceback__.tb_lineno}")
                                         with max_request_lock:
                                             error_count += 1
                                             error_window.append(1)
@@ -1204,7 +1204,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
 
                                         except subprocess.CalledProcessError as e:
                                             logger.error(
-                                                f"錯誤信息: {e} 發生錯誤的行數: {e.__traceback__.tb_lineno}")
+                                                f"錯誤訊息: {e} 發生錯誤的行數: {e.__traceback__.tb_lineno}")
                                             with max_request_lock:
                                                 error_count += 1
                                                 error_window.append(1)
@@ -1235,7 +1235,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                                 return
 
                                         except subprocess.CalledProcessError as e:
-                                            logger.error(f"錯誤信息: {e} 發生錯誤的行數: {e.__traceback__.tb_lineno}")
+                                            logger.error(f"錯誤訊息: {e} 發生錯誤的行數: {e.__traceback__.tb_lineno}")
                                             with max_request_lock:
                                                 error_count += 1
                                                 error_window.append(1)
@@ -1243,7 +1243,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                 count_time = time.time()
 
                 except Exception as e:
-                    logger.error(f"錯誤信息: {e} 發生錯誤的行數: {e.__traceback__.tb_lineno}")
+                    logger.error(f"錯誤訊息: {e} 發生錯誤的行數: {e.__traceback__.tb_lineno}")
                     with max_request_lock:
                         error_count += 1
                         error_window.append(1)
@@ -1277,7 +1277,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                 if loop_time:
                     print('\r檢查直播間中...', end="")
         except Exception as e:
-            logger.error(f"錯誤信息: {e} 發生錯誤的行數: {e.__traceback__.tb_lineno}")
+            logger.error(f"錯誤訊息: {e} 發生錯誤的行數: {e.__traceback__.tb_lineno}")
             with max_request_lock:
                 error_count += 1
                 error_window.append(1)
@@ -1326,7 +1326,7 @@ def backup_file_start() -> None:
                     url_config_md5 = new_url_config_md5
             time.sleep(600)
         except Exception as e:
-            logger.error(f"備份配置文件失敗, 錯誤信息: {e}")
+            logger.error(f"備份配置文件失敗, 錯誤訊息: {e}")
 
 
 # --------------------------检查是否存在ffmpeg-------------------------------------
@@ -1361,7 +1361,7 @@ print("|                DouyinLiveRecorder                 |")
 print("-----------------------------------------------------")
 
 print(f"版本號: {version}")
-print("GitHub: https://github.com/ihmily/DouyinLiveRecorder")
+print("GitHub: https://github.com/SAOJSM/LiveRecorder-1")
 print(f'支持平台: {platforms}')
 print('.....................................................')
 
@@ -1374,7 +1374,6 @@ utils.remove_duplicate_lines(url_config_file)
 def read_config_value(config_parser: configparser.RawConfigParser, section: str, option: str, default_value: Any) \
         -> Any:
     try:
-
         config_parser.read(config_file, encoding=text_encoding)
         if '錄製設置' not in config_parser.sections():
             config_parser.add_section('錄製設置')
@@ -1384,8 +1383,8 @@ def read_config_value(config_parser: configparser.RawConfigParser, section: str,
             config_parser.add_section('Cookie')
         if 'Authorization' not in config_parser.sections():
             config_parser.add_section('Authorization')
-        if '賬號密碼' not in config_parser.sections():
-            config_parser.add_section('賬號密碼')
+        if '帳號密碼' not in config_parser.sections():
+            config_parser.add_section('帳號密碼')
         return config_parser.get(section, option)
     except (configparser.NoSectionError, configparser.NoOptionError):
         config_parser.set(section, option, str(default_value))
@@ -1409,11 +1408,11 @@ try:
         print('系統代理檢測中，請耐心等待...')
         response_g = urllib.request.urlopen("https://www.google.com/", timeout=15)
         global_proxy = True
-        print('\r全局/規則網絡代理已開啟√')
+        print('\r全局/規則網路代理已開啟√')
 except HTTPError as err:
     print(f"HTTP error occurred: {err.code} - {err.reason}")
 except URLError as err:
-    print('INFO：未檢測到全局/規則網絡代理，請檢查代理配置（若無需錄製海外直播請忽略此條提示）')
+    print('INFO：未檢測到全局/規則網路代理，請檢查代理配置（若無需錄製海外直播請忽略此條訊息）')
 except Exception as err:
     print("An unexpected error occurred:", err)
 
@@ -1493,16 +1492,16 @@ while True:
     push_check_seconds = int(read_config_value(config, '推送配置', '直播推送檢測頻率(秒)', 1800))
     begin_show_push = options.get(read_config_value(config, '推送配置', '開播推送開啟(是/否)', "是"), True)
     over_show_push = options.get(read_config_value(config, '推送配置', '關播推送開啟(是/否)', "否"), False)
-    sooplive_username = read_config_value(config, '賬號密碼', 'sooplive帳號', '')
-    sooplive_password = read_config_value(config, '賬號密碼', 'sooplive密碼', '')
-    flextv_username = read_config_value(config, '賬號密碼', 'flextv帳號', '')
-    flextv_password = read_config_value(config, '賬號密碼', 'flextv密碼', '')
-    popkontv_username = read_config_value(config, '賬號密碼', 'popkontv帳號', '')
-    popkontv_partner_code = read_config_value(config, '賬號密碼', 'partner_code', 'P-00001')
-    popkontv_password = read_config_value(config, '賬號密碼', 'popkontv密碼', '')
-    twitcasting_account_type = read_config_value(config, '賬號密碼', 'twitcasting帳號類型', 'normal')
-    twitcasting_username = read_config_value(config, '賬號密碼', 'twitcasting帳號', '')
-    twitcasting_password = read_config_value(config, '賬號密碼', 'twitcasting密碼', '')
+    sooplive_username = read_config_value(config, '帳號密碼', 'sooplive帳號', '')
+    sooplive_password = read_config_value(config, '帳號密碼', 'sooplive密碼', '')
+    flextv_username = read_config_value(config, '帳號密碼', 'flextv帳號', '')
+    flextv_password = read_config_value(config, '帳號密碼', 'flextv密碼', '')
+    popkontv_username = read_config_value(config, '帳號密碼', 'popkontv帳號', '')
+    popkontv_partner_code = read_config_value(config, '帳號密碼', 'partner_code', 'P-00001')
+    popkontv_password = read_config_value(config, '帳號密碼', 'popkontv密碼', '')
+    twitcasting_account_type = read_config_value(config, '帳號密碼', 'twitcasting帳號類型', 'normal')
+    twitcasting_username = read_config_value(config, '帳號密碼', 'twitcasting帳號', '')
+    twitcasting_password = read_config_value(config, '帳號密碼', 'twitcasting密碼', '')
     popkontv_access_token = read_config_value(config, 'Authorization', 'popkontv_token', '')
     dy_cookie = read_config_value(config, 'Cookie', '抖音cookie', '')
     ks_cookie = read_config_value(config, 'Cookie', '快手cookie', '')
@@ -1703,7 +1702,7 @@ while True:
                         url_tuples_list.append(new_line)
                 else:
                     if not origin_line.startswith('#'):
-                        print(f"\r{origin_line} 本行包含未知鏈接.此條跳過")
+                        print(f"\r{origin_line} 本行包含未知鏈結.此條跳過")
                         update_file(url_config_file, old_str=origin_line, new_str=origin_line, start_str='#')
 
         while len(need_update_line_list):
@@ -1740,7 +1739,7 @@ while True:
         first_start = False
 
     except Exception as err:
-        logger.error(f"錯誤信息: {err} 發生錯誤的行數: {err.__traceback__.tb_lineno}")  # 錯誤信息: {err} 發生錯誤的行數: {err.__traceback__.tb_lineno}
+        logger.error(f"錯誤訊息: {err} 發生錯誤的行數: {err.__traceback__.tb_lineno}")  # 錯誤信息: {err} 發生錯誤的行數: {err.__traceback__.tb_lineno}
 
     if first_run:
         t = threading.Thread(target=display_info, args=(), daemon=True)
