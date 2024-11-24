@@ -4,7 +4,7 @@
 Author: SAOJSM
 GitHub: https://github.com/SAOJSM
 Date: 2023-07-17 23:52:05
-Update: 2024-11-10 23:00:00
+Update: 2024-11-25 01:11:00
 Copyright (c) 2023-2024 by SAOJSM, All Rights Reserved.
 Function: Record live stream video.
 """
