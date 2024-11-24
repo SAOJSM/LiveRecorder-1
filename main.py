@@ -38,7 +38,7 @@ from msg_push import (
 version = "v4.0.1"
 platforms = ("\n國內站點：抖音|快手|虎牙|斗魚|YY|B站|小紅書|bigo|blued|網易CC|千度熱播|貓耳FM|Look|TwitCasting|百度|微博|"
              "酷狗|花椒|流星|Acfun|暢聊|映客|音播|知乎|嗨秀|VV星球|17Live|浪Live|漂漂|六間房|樂嗨|花貓"
-             "\n海外��點：TikTok|SOOP|PandaTV|WinkTV|FlexTV|PopkonTV|TwitchTV|LiveMe|ShowRoom|CHZZK")
+             "\n海外站點：TikTok|SOOP|PandaTV|WinkTV|FlexTV|PopkonTV|TwitchTV|LiveMe|ShowRoom|CHZZK")
 
 recording = set()
 error_count = 0
