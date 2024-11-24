@@ -38,7 +38,7 @@ from msg_push import (
 version = "v4.0.1"
 platforms = ("\n國內站點：抖音|快手|虎牙|斗魚|YY|B站|小紅書|bigo|blued|網易CC|千度熱播|貓耳FM|Look|TwitCasting|百度|微博|"
              "酷狗|花椒|流星|Acfun|暢聊|映客|音播|知乎|嗨秀|VV星球|17Live|浪Live|漂漂|六間房|樂嗨|花貓"
-             "\n海外��點：TikTok|SOOP|PandaTV|WinkTV|FlexTV|PopkonTV|TwitchTV|LiveMe|ShowRoom|CHZZK")
+             "\n海外站點：TikTok|SOOP|PandaTV|WinkTV|FlexTV|PopkonTV|TwitchTV|LiveMe|ShowRoom|CHZZK")
 
 recording = set()
 error_count = 0
@@ -429,7 +429,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                 logger.error("錯誤訊息: 網路異常，請檢查網路是否能正常訪問TikTok平台")
 
                     elif record_url.find("https://live.kuaishou.com/") > -1:
-                        platform = '快手直��'
+                        platform = '快手直���'
                         with semaphore:
                             json_data = spider.get_kuaishou_stream_data(
                                 url=record_url,
@@ -1445,7 +1445,7 @@ while True:
     use_proxy = options.get(read_config_value(config, '錄製設置', '是否使用代理ip(是/否)', "是"), False)
     proxy_addr_bak = read_config_value(config, '錄製設置', '代理地址', "")
     proxy_addr = None if not use_proxy else proxy_addr_bak
-    max_request = int(read_config_value(config, '錄製設置', '同一時間訪問路的線程數', 3))
+    max_request = int(read_config_value(config, '錄製設置', '同一時間訪問ㄌㄨ的線程數', 3))
     semaphore = threading.Semaphore(max_request)
     delay_default = int(read_config_value(config, '錄製設置', '循環時間(秒)', 120))
     local_delay_default = int(read_config_value(config, '錄製設置', '排隊讀取網址時間(秒)', 0))
