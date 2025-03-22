@@ -1,0 +1,38 @@
+name: 🚀 Feature request
+description: 提出你對專案的新想法或建議。
+title: 🚀[Feature] 請輸入標題
+labels: enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        📝 **請在上方的`title`中填寫一個簡潔明瞭的標題**，格式建議為：🚀[Feature] 簡短描述。
+        例如：🚀[Feature] 新增xx直播錄製。
+  - type: checkboxes
+    attributes:
+      label: ⚠️ 搜索是否存在類似issue
+      description: >
+        🔍 [點選這裡搜索歷史issue](https://github.com/ihmily/DouyinLiveRecorder/issues?q=is%3Aissue) 使用關鍵詞搜索，確保沒有重複的issue。
+      options:
+        - label: 我已經搜索過issues，沒有發現相似issue
+          required: true
+  - type: textarea
+    attributes:
+      label: 📜 功能描述
+      description: 請詳細描述你希望新增的功能，包括它的工作方式和預期效果。
+      placeholder: |
+        功能描述：
+  - type: textarea
+    attributes:
+      label: 🌐 舉例(可選)
+      description: 如果可能，請提供功能相關的示例、截圖或相關網址。
+      placeholder: |
+        直播間示例地址：
+        `https://www.example.com/live/xxxx` 
+
+  - type: textarea
+    attributes:
+      label: 💡 動機
+      description: 描述你提出該feature的動機，以及沒有這項feature對你的使用造成了怎樣的影響。
+      placeholder: |
+        我需要這個功能是因為...

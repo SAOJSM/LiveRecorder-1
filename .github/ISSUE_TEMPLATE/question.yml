@@ -1,0 +1,63 @@
+name: ❓ Question
+description: 對程式使用有疑問？在這裡提出你的問題。
+title: ❓[Question] 請輸入標題
+labels: question
+body:
+  - type: markdown
+    attributes:
+      value: |
+        📝 **請在上方的`title`中填寫一個簡潔明瞭的問題標題**。這將幫助其他人快速理解你的問題。
+        例如：❓[Question] 如果設定單個直播間的錄製清晰度。
+  - type: checkboxes
+    attributes:
+      label: ⚠️ 搜索是否存在類似問題
+      description: >
+        🔍 [點選這裡搜索歷史issue](https://github.com/ihmily/DouyinLiveRecorder/issues?q=is%3Aissue) 使用關鍵詞搜索，看看是否已經有人問過類似的問題。
+      options:
+        - label: 我已經搜索過issues，沒有找到相似的問題
+          required: true
+  - type: dropdown
+    attributes:
+      label: 🔧 執行方式
+      description: 請選擇你是如何執行程式的。
+      options:
+        - 直接執行的exe檔案
+        - 使用原始碼執行
+        - 使用docker執行
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: 🐍 如果是使用原始碼執行，請選擇你的Python環境版本
+      description: 請選擇你執行程式的Python版本。
+      options:
+        - Python 3.10
+        - Python 3.11
+        - Python 3.12
+        - Python 3.13
+        - Other (請在問題中說明)
+    validations:
+      required: false
+  - type: dropdown
+    attributes:
+      label: 💻 請選擇你的系統環境
+      description: 請選擇你執行程式的具體系統版本。
+      options:
+        - Windows 10
+        - Windows 11
+        - macOS
+        - Ubuntu
+        - CentOS
+        - Fedora
+        - Debian
+        - Other (請在問題中說明)
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: 🤔 問題詳情
+      description: 請提供與你的問題相關的所有詳細資訊。
+      placeholder: |
+        你的問題具體是關於什麼？
+    validations:
+      required: true

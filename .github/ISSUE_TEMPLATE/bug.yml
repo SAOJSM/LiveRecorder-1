@@ -1,0 +1,91 @@
+name: 🐛 Bug report
+description: 建立Bug報告以幫助專案改進。
+title: 🐛[BUG] 請輸入標題
+labels: bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        📝 **請在上方的`title`中填寫一個簡潔明瞭的標題**，格式建議為：🐛[Bug] 簡短描述。
+        例如：🐛[Bug] B站某些直播間無法錄製。
+  - type: checkboxes
+    attributes:
+      label: ⚠️ 確認是否已存在類似問題
+      description: >
+        🔍 [點選這裡搜索歷史issue](https://github.com/ihmily/DouyinLiveRecorder/issues?q=is%3Aissue) 
+        請確保你的問題沒有被報告過。
+      options:
+        - label: 我已經搜索過issues，沒有找到類似問題
+          required: true
+  - type: dropdown
+    attributes:
+      label: 🔧 執行方式
+      description: 請選擇你是如何執行程式的。
+      options:
+        - 直接執行的exe檔案
+        - 使用原始碼執行
+        - 使用docker執行
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: 🐍 如果是使用原始碼執行，請選擇你的Python環境版本
+      description: 請選擇你執行程式的Python版本。
+      options:
+        - Python 3.10
+        - Python 3.11
+        - Python 3.12
+        - Python 3.13
+        - Other (請在問題中說明)
+    validations:
+      required: false
+  - type: dropdown
+    attributes:
+      label: 💻 請選擇你的系統環境
+      description: 請選擇你執行程式的具體系統版本。
+      options:
+        - Windows 10
+        - Windows 11
+        - macOS
+        - Ubuntu
+        - CentOS
+        - Fedora
+        - Debian
+        - Other (請在問題中說明)
+    validations:
+      required: true
+  - type: checkboxes
+    attributes:
+      label: ⚠️ 確認是否已經重試多次
+      description: >
+        有時可能是你的裝置或者網路問題導致的。
+      options:
+        - label: 我已經嘗試過多次，仍然出現問題
+          required: true
+  - type: textarea
+    attributes:
+      label: 🕹 復現步驟
+      description: |
+        **⚠️ 不能復現將會關閉issue.**
+        請按照以下格式填寫：
+        1. 錄製的直播間地址是...
+        2. 使用的錄製格式是...
+        3. ...
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: 😯 問題描述
+      description: 詳細描述出現的問題，或提供有關截圖。
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: 📜 錯誤資訊
+      description: 如果有，請貼出相關的日誌錯誤資訊或者截圖。
+    validations:
+      required: false
