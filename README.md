@@ -1,14 +1,22 @@
-![video_spider](https://socialify.git.ci/ihmily/DouyinLiveRecorder/image?font=Inter&forks=1&language=1&owner=1&pattern=Circuit%20Board&stargazers=1&theme=Light)
+![video_spider](https://socialify.git.ci/SAOJSM/LiveRecorder-1/image?font=Inter&forks=1&language=1&owner=1&pattern=Circuit%20Board&stargazers=1&theme=Light)
 
 ## 💡簡介
 [![Python Version](https://img.shields.io/badge/python-3.11.6-blue.svg)](https://www.python.org/downloads/release/python-3116/)
-[![Supported Platforms](https://img.shields.io/badge/platforms-Windows%20%7C%20Linux-blue.svg)](https://github.com/ihmily/DouyinLiveRecorder)
-[![Docker Pulls](https://img.shields.io/docker/pulls/ihmily/douyin-live-recorder?label=Docker%20Pulls&color=blue&logo=docker)](https://hub.docker.com/r/ihmily/douyin-live-recorder/tags)
-![GitHub issues](https://img.shields.io/github/issues/ihmily/DouyinLiveRecorder.svg)
-[![Latest Release](https://img.shields.io/github/v/release/ihmily/DouyinLiveRecorder)](https://github.com/ihmily/DouyinLiveRecorder/releases/latest)
-[![Downloads](https://img.shields.io/github/downloads/ihmily/DouyinLiveRecorder/total)](https://github.com/ihmily/DouyinLiveRecorder/releases/latest)
+[![Supported Platforms](https://img.shields.io/badge/platforms-Windows%20%7C%20Linux-blue.svg)](https://github.com/SAOJSM/LiveRecorder-1)
+[![Docker Pulls](https://img.shields.io/docker/pulls/SAOJSM/LiveRecorder-1?label=Docker%20Pulls&color=blue&logo=docker)](https://hub.docker.com/r/SAOJSM/LiveRecorder-1/tags)
+![GitHub issues](https://img.shields.io/github/issues/SAOJSM/LiveRecorder-1.svg)
+[![Latest Release](https://img.shields.io/github/v/release/SAOJSM/LiveRecorder-1)](https://github.com/SAOJSM/LiveRecorder-1/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/SAOJSM/LiveRecorder-1/total)](https://github.com/SAOJSM/LiveRecorder-1/releases/latest)
 
 一款**簡易**的可循環值守的直播錄製工具，基於FFmpeg實現多平臺直播源錄製，支援自定義配置錄製以及直播狀態推送。
+
+## 📝更新日誌
+
+### 2025-03-21
+- 完成專案繁體中文化
+- 優化使用者介面文字顯示
+- 修正部分亂碼問題
+- 更新專案資訊及相關連結
 
 </div>
 
@@ -69,11 +77,11 @@
 
 ```
 .
-└── DouyinLiveRecorder/
+└── LiveRecorder-1/
     ├── /config -> (config record)
     ├── /logs -> (save runing log file)
     ├── /backup_config -> (backup file)
-    ├── /douyinliverecorder -> (package)
+    ├── /liverecorder -> (package)
         ├── initializer.py-> (check and install nodejs)
     	├── spider.py-> (get live data)
     	├── stream.py-> (get live stream address)
@@ -98,7 +106,7 @@
 
 ## 🌱使用說明
 
-- 對於只想使用錄製軟體的小白使用者，進入[Releases](https://github.com/ihmily/DouyinLiveRecorder/releases) 中下載最新發布的 zip壓縮包即可，裡面有打包好的錄製軟體。（有些電腦可能會報毒，直接忽略即可，如果下載時被瀏覽器遮蔽，請更換瀏覽器下載）
+- 對於只想使用錄製軟體的小白使用者，進入[Releases](https://github.com/SAOJSM/LiveRecorder-1/releases) 中下載最新發布的 zip壓縮包即可，裡面有打包好的錄製軟體。（有些電腦可能會報毒，直接忽略即可，如果下載時被瀏覽器遮蔽，請更換瀏覽器下載）
 
 - 壓縮包解壓後，在 `config` 資料夾內的 `URL_config.ini` 中新增錄製直播間地址，一行一個直播間地址。如果要自定義配置錄製，可以修改`config.ini` 檔案，推薦將錄製格式修改爲`ts`。
 - 以上步驟都做好後，就可以執行`DouyinLiveRecorder.exe` 程式進行錄製了。錄製的視訊檔案儲存在同目錄下的 `downloads` 資料夾內。
