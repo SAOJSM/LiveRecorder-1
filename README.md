@@ -82,7 +82,7 @@
     ├── /logs -> (save runing log file)
     ├── /backup_config -> (backup file)
     ├── /streamget -> (package)
-      ├── initializer.py-> (check and install nodejs)
+        ├── initializer.py-> (check and install nodejs)
     	├── spider.py-> (get live data)
     	├── stream.py-> (get live stream address)
     	├── utils.py -> (contains utility functions)
