@@ -99,7 +99,7 @@
 
 ## 🌱使用說明
 
-- 對於只想使用錄製軟體的小白使用者，進入[Releases](https://github.com/SAOJSM/LiveRecorder-1/releases) 中下載最新發布的 zip壓縮包即可，裡面有打包好的錄製軟體。（有些電腦可能會報毒，直接忽略即可，如果下載時被瀏覽器遮蔽，請更換瀏覽器下載）
+- 對於只想使用錄製軟體的小白使用者，請進入[Releases](https://github.com/ihmily/DouyinLiveRecorder/releases) 中下載最新發布的 zip壓縮包即可(本專案目前沒有Release)，裡面有打包好的錄製軟體。（有些電腦可能會報毒，直接忽略即可，如果下載時被瀏覽器遮蔽，請更換瀏覽器下載）
 
 - 壓縮包解壓後，在 `config` 資料夾內的 `URL_config.ini` 中新增錄製直播間地址，一行一個直播間地址。如果要自定義配置錄製，可以修改`config.ini` 檔案，推薦將錄製格式修改爲`ts`。
 - 以上步驟都做好後，就可以執行`DouyinLiveRecorder.exe` 程式進行錄製了。錄製的視訊檔案儲存在同目錄下的 `downloads` 資料夾內。
