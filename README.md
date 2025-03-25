@@ -104,13 +104,13 @@
 - 壓縮包解壓後，在 `config` 資料夾內的 `URL_config.ini` 中新增錄製直播間地址，一行一個直播間地址。如果要自定義配置錄製，可以修改`config.ini` 檔案，推薦將錄製格式修改爲`ts`。
 - 以上步驟都做好後，就可以執行`DouyinLiveRecorder.exe` 程式進行錄製了。錄製的視訊檔案儲存在同目錄下的 `downloads` 資料夾內。
 
-- 另外，如果需要錄製TikTok、AfreecaTV等海外平臺，請在配置檔案中設定開啟代理並新增proxy_addr鏈接 如：`127.0.0.1:7890` （這只是示例地址，具體根據實際填寫）。
+- 另外，如果位於牆內，需要錄製TikTok、AfreecaTV等海外平臺，請在配置檔案中設定開啟代理並新增proxy_addr鏈接 如：`127.0.0.1:7890` （這只是示例地址，具體根據實際填寫）。
 
-- 假如`URL_config.ini`檔案中新增的直播間地址，有個別直播間暫時不想錄制又不想移除鏈接，可以在對應直播間的鏈接開頭加上`#`，那麼將停止該直播間的監測以及錄製。
+- 假如`URL_config.ini`檔案中新增的直播間地址，有個別直播間暫時不想錄製又不想移除鏈接，可以在對應直播間的鏈接開頭加上`#`，那麼將停止該直播間的監測以及錄製。
 
 - 軟體預設錄製清晰度為 `原畫` ，如果要單獨設定某個直播間的錄製畫質，可以在新增直播間地址時前面加上畫質即可，如`超清，https://live.douyin.com/745964462470` 記得中間要有`,` 分隔。
 
-- 如果要長時間掛著軟體循環監測直播，最好循環時間設定長一點（咱也不差沒錄製到的那幾分鐘），避免因請求頻繁導致被官方封禁IP 。
+- 如果要長時間掛著軟體循環監測直播，建議循環時間設定長一點（咱也不差沒錄製到的那幾分鐘），避免因請求頻繁導致被官方封禁IP 。
 
 - 要停止直播錄製，Windows平臺可執行StopRecording.vbs指令碼檔案，或者在錄製界面使用 `Ctrl+C ` 組合鍵中斷錄製，若要停止其中某個直播間的錄製，可在`URL_config.ini`檔案中的地址前加#，會自動停止對應直播間的錄製並正常儲存已錄製的視訊。
 - 最後，歡迎右上角給本專案一個star，同時也非常樂意大家提交pr。
@@ -276,13 +276,13 @@ https://www.faceit.com/zh/players/Compl1/stream
 1.首先拉取或手動下載本倉庫專案程式碼
 
 ```bash
-git clone https://github.com/ihmily/DouyinLiveRecorder.git
+git clone https://github.com/SAOJSM/LiveRecorder-1.git
 ```
 
 2.進入專案資料夾，安裝依賴
 
 ```bash
-cd DouyinLiveRecorder
+cd LiveRecorder-1
 python -m pip3 install -r requirements.txt
 ```
 
@@ -329,7 +329,7 @@ python main.py
 
 1.快速啟動
 
-最簡單方法是執行專案中的 [docker-compose.yaml](https://github.com/ihmily/DouyinLiveRecorder/blob/main/docker-compose.yaml) 檔案，只需簡單執行以下命令：
+最簡單方法是執行專案中的 [docker-compose.yaml](https://github.com/SAOJSM/LiveRecorder-1/blob/master/docker-compose.yaml) 檔案，只需簡單執行以下命令：
 
 ```bash
 docker-compose up
@@ -341,7 +341,7 @@ docker-compose up
 
 2.構建映象(可選)
 
-如果你只想簡單的執行程式，則不需要做這一步。Docker映象倉庫中程式碼版本可能不是最新的，如果要執行本倉庫主分支最新程式碼，可以本地自定義構建，通過修改 [docker-compose.yaml](https://github.com/ihmily/DouyinLiveRecorder/blob/main/docker-compose.yaml) 檔案，如將映象名修改爲 `douyin-live-recorder:latest`，並取消 `# build: .` 註釋，然後再執行
+如果你只想簡單的執行程式，則不需要做這一步。Docker映象倉庫中程式碼版本可能不是最新的，如果要執行本倉庫主分支最新程式碼，可以本地自定義構建，通過修改 [docker-compose.yaml](https://github.com/SAOJSM/LiveRecorder-1/blob/master/docker-compose.yaml) 檔案，如將映象名修改爲 `douyin-live-recorder:latest`，並取消 `# build: .` 註釋，然後再執行
 
 ```bash
 docker build -t douyin-live-recorder:latest .
