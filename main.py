@@ -92,59 +92,71 @@ def get_formatted_filename(anchor_name: str, title_in_name: str = "") -> str:
     根據要求生成檔案名稱:
     主播名稱 + 空格 + 日期(年-月-日)，如有重複則加上-1,-2等後綴
     如果時間在早上6點以前，使用前一天的日期
-    
+
     參數:
     anchor_name: 主播名稱
     title_in_name: 直播標題(不使用)
-    
+
     返回:
     格式化的檔名(不含副檔名)
     """
     # 取得目前時間
     current_time = datetime.datetime.now()
-    
+
     # 如果時間在早上6點以前，則使用前一天的日期
     if current_time.hour < 6:
         current_time = current_time - datetime.timedelta(days=1)
-    
+
     # 格式化日期 (年-月-日)
     date_str = current_time.strftime('%Y%m%d')
-    
+
     # 基本檔名: 主播名稱 + 空格 + 日期
     base_filename = f"{anchor_name} {date_str}"
-    
+
     return base_filename
 
 
 def get_non_duplicate_filename(base_path: str, base_filename: str, extension: str) -> str:
     """
     生成不重複的檔案名稱，如果檔案已存在則自動添加遞增編號
-    
+
     參數:
     base_path: 檔案所在的目錄路徑
     base_filename: 基本檔名(不含副檔名)
     extension: 副檔名(如 'ts', 'mp4' 等，不含點)
-    
+
     返回:
     完整的檔案名稱(不含路徑，但包含副檔名)
     """
+    # 檢查基本檔名是否已經包含編號
+    if "-" in base_filename:
+        parts = base_filename.split("-")
+        if len(parts) > 1 and parts[-1].isdigit():
+            # 如果最後一部分是數字，則認為這是一個已經有編號的檔名
+            # 我們需要去掉這個編號，使用原始的基本檔名
+            base_filename = "-".join(parts[:-1])
+
     # 先檢查基本檔名是否可用
     filename = f"{base_filename}.{extension}"
     full_path = f"{base_path}/{filename}"
-    
+
     # 如果檔案不存在，直接返回基本檔名
     if not os.path.exists(full_path):
         return filename
-    
+
     # 如果檔案存在，則嘗試添加遞增編號，從1開始
     counter = 1
+
+    # 檢查是否已經有帶有編號的檔案存在
+    # 例如：檢查 "主播名 日期-1.mp4", "主播名 日期-2.mp4" 等
     while True:
+        # 檢查是否有 "主播名 日期-N.mp4" 格式的檔案
         filename = f"{base_filename}-{counter}.{extension}"
         full_path = f"{base_path}/{filename}"
-        
+
         if not os.path.exists(full_path):
             return filename
-        
+
         counter += 1
 
 
@@ -250,23 +262,109 @@ def segment_video(converts_file_path: str, segment_save_file_path: str, segment_
                   is_original_delete: bool = True) -> None:
     try:
         if os.path.exists(converts_file_path) and os.path.getsize(converts_file_path) > 0:
-            ffmpeg_command = [
+            # 獲取檔案路徑和基本檔名
+            dir_path = os.path.dirname(segment_save_file_path)
+            base_filename = os.path.basename(segment_save_file_path)
+
+            # 如果包含 "-%d"，則移除這部分以獲取基本檔名
+            if "-%d" in base_filename:
+                base_filename = base_filename.replace("-%d", "")
+
+            # 使用 get_non_duplicate_filename 獲取不重複的檔名
+            # 注意：這裡我們不需要傳入副檔名，因為 base_filename 已經包含了副檔名
+            extension = os.path.splitext(base_filename)[1][1:]  # 獲取副檔名（不含點）
+            base_name = os.path.splitext(base_filename)[0]  # 獲取基本檔名（不含副檔名）
+
+            # 獲取第一個檔案的名稱
+            first_filename = get_non_duplicate_filename(dir_path, base_name, extension)
+            first_file_path = f"{dir_path}/{first_filename}"
+
+            # 創建第一個檔案（不帶編號）
+            first_command = [
                 "ffmpeg",
                 "-i", converts_file_path,
                 "-c:v", "copy",
                 "-c:a", "copy",
                 "-map", "0",
-                "-f", "segment",
-                "-segment_time", segment_time,
-                "-segment_format", segment_format,
-                "-reset_timestamps", "1",
-                "-segment_start_number", "1", # 設置分段的起始編號為1
-                "-movflags", "+frag_keyframe+empty_moov",
-                segment_save_file_path,
+                "-t", segment_time,  # 只取第一個分段的時間
+                "-f", segment_format,
+                first_file_path,
             ]
-            _output = subprocess.check_output(
-                ffmpeg_command, stderr=subprocess.STDOUT, startupinfo=get_startup_info(os_type)
+
+            # 執行第一個命令
+            _first_output = subprocess.check_output(
+                first_command, stderr=subprocess.STDOUT, startupinfo=get_startup_info(os_type)
             )
+
+            # 如果視頻長度超過分段時間，則創建後續分段
+            # 獲取視頻總時長
+            duration_command = [
+                "ffprobe",
+                "-v", "error",
+                "-show_entries", "format=duration",
+                "-of", "default=noprint_wrappers=1:nokey=1",
+                converts_file_path
+            ]
+
+            try:
+                duration_output = subprocess.check_output(
+                    duration_command, stderr=subprocess.STDOUT, startupinfo=get_startup_info(os_type)
+                )
+                duration = float(duration_output.decode('utf-8').strip())
+
+                # 如果視頻總時長超過分段時間，則需要創建後續分段
+                if duration > float(segment_time):
+                    # 獲取第二個檔案的名稱
+                    second_filename = get_non_duplicate_filename(dir_path, base_name, extension)
+
+                    # 創建第二個檔案
+                    second_command = [
+                        "ffmpeg",
+                        "-i", converts_file_path,
+                        "-c:v", "copy",
+                        "-c:a", "copy",
+                        "-map", "0",
+                        "-ss", segment_time,  # 從第一個分段結束的時間開始
+                        "-f", segment_format,
+                        f"{dir_path}/{second_filename}",
+                    ]
+
+                    # 執行第二個命令
+                    _second_output = subprocess.check_output(
+                        second_command, stderr=subprocess.STDOUT, startupinfo=get_startup_info(os_type)
+                    )
+
+                    # 如果視頻總時長超過兩個分段時間，則需要創建更多分段
+                    segment_count = 2
+                    current_time = float(segment_time) * 2
+
+                    while current_time < duration:
+                        # 獲取下一個檔案的名稱
+                        next_filename = get_non_duplicate_filename(dir_path, base_name, extension)
+
+                        # 創建下一個檔案
+                        next_command = [
+                            "ffmpeg",
+                            "-i", converts_file_path,
+                            "-c:v", "copy",
+                            "-c:a", "copy",
+                            "-map", "0",
+                            "-ss", str(current_time),  # 從當前時間開始
+                            "-t", segment_time,  # 只取一個分段的時間
+                            "-f", segment_format,
+                            f"{dir_path}/{next_filename}",
+                        ]
+
+                        # 執行命令
+                        _next_output = subprocess.check_output(
+                            next_command, stderr=subprocess.STDOUT, startupinfo=get_startup_info(os_type)
+                        )
+
+                        segment_count += 1
+                        current_time += float(segment_time)
+            except Exception as e:
+                logger.error(f'Error getting video duration or creating segments: {e}')
+
             if is_original_delete:
                 time.sleep(1)
                 if os.path.exists(converts_file_path):
@@ -1202,7 +1300,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                     # 使用新函數獲取不重複的檔案名稱
                                     filename = get_non_duplicate_filename(full_path, base_filename, "flv")
                                     save_file_path = f'{full_path}/{filename}'
-                                    
+
                                     print(f'{rec_info}/{filename}')
 
                                     subs_file_path = save_file_path.rsplit('.', maxsplit=1)[0]
@@ -1269,27 +1367,23 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                     base_filename = get_formatted_filename(anchor_name, title_in_name)
                                     # 使用新函數獲取不重複的檔案名稱
                                     filename = get_non_duplicate_filename(full_path, base_filename, "mkv")
-                                    
+
                                     print(f'{rec_info}/{filename}')
                                     save_file_path = full_path + '/' + filename
-                                    
+
                                     # 從檔案名稱中提取實際使用的基本檔名(可能已包含編號)
                                     actual_base_filename = os.path.splitext(filename)[0]
 
                                     try:
                                         if split_video_by_time:
-                                            # 使用實際基本檔名來命名分段檔案，從1開始編號
-                                            save_file_path = f"{full_path}/{actual_base_filename}-%d.mkv"
+                                            # 使用實際基本檔名來命名分段檔案
+                                            save_file_path = f"{full_path}/{actual_base_filename}.mkv"
                                             command = [
                                                 "-flags", "global_header",
                                                 "-c:v", "copy",
                                                 "-c:a", "aac",
                                                 "-map", "0",
-                                                "-f", "segment",
-                                                "-segment_time", split_time,
-                                                "-segment_format", "matroska",
-                                                "-reset_timestamps", "1",
-                                                "-segment_start_number", "1", # 設置分段的起始編號為1
+                                                "-f", "matroska",
                                                 save_file_path,
                                             ]
                                         else:
@@ -1324,26 +1418,22 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                     base_filename = get_formatted_filename(anchor_name, title_in_name)
                                     # 使用新函數獲取不重複的檔案名稱
                                     filename = get_non_duplicate_filename(full_path, base_filename, "mp4")
-                                    
+
                                     print(f'{rec_info}/{filename}')
                                     save_file_path = full_path + '/' + filename
-                                    
+
                                     # 從檔案名稱中提取實際使用的基本檔名(可能已包含編號)
                                     actual_base_filename = os.path.splitext(filename)[0]
 
                                     try:
                                         if split_video_by_time:
-                                            # 使用實際基本檔名來命名分段檔案，從1開始編號
-                                            save_file_path = f"{full_path}/{actual_base_filename}-%d.mp4"
+                                            # 使用實際基本檔名來命名分段檔案
+                                            save_file_path = f"{full_path}/{actual_base_filename}.mp4"
                                             command = [
                                                 "-c:v", "copy",
                                                 "-c:a", "aac",
                                                 "-map", "0",
-                                                "-f", "segment",
-                                                "-segment_time", split_time,
-                                                "-segment_format", "mp4",
-                                                "-reset_timestamps", "1",
-                                                "-segment_start_number", "1", # 設置分段的起始編號為1
+                                                "-f", "mp4",
                                                 "-movflags", "+frag_keyframe+empty_moov",
                                                 save_file_path,
                                             ]
@@ -1386,30 +1476,31 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                         if split_video_by_time:
                                             print(f'\r{anchor_name} 準備開始錄製音訊: {save_file_path}')
 
+                                            # 使用 get_non_duplicate_filename 獲取不重複的檔名
                                             if "MP3" in video_save_type:
+                                                # 獲取第一個檔案的名稱
+                                                first_filename = get_non_duplicate_filename(full_path, base_filename, "mp3")
+                                                first_file_path = f"{full_path}/{first_filename}"
+
                                                 command = [
                                                     "-map", "0:a",
                                                     "-c:a", "libmp3lame",
                                                     "-ab", "320k",
-                                                    "-f", "segment",
-                                                    "-segment_time", split_time,
-                                                    "-segment_format", 'mp3',
-                                                    "-reset_timestamps", "1",
-                                                    "-segment_start_number", "1", # 設置分段的起始編號為1
-                                                    f"{full_path}/{base_filename}-%d.mp3",
+                                                    "-f", "mp3",
+                                                    first_file_path,
                                                 ]
                                             else:
+                                                # 獲取第一個檔案的名稱
+                                                first_filename = get_non_duplicate_filename(full_path, base_filename, "m4a")
+                                                first_file_path = f"{full_path}/{first_filename}"
+
                                                 command = [
                                                     "-map", "0:a",
                                                     "-c:a", "aac",
                                                     "-bsf:a", "aac_adtstoasc",
                                                     "-ab", "320k",
-                                                    "-f", "segment",
-                                                    "-segment_time", split_time,
-                                                    "-segment_format", 'mpegts',
-                                                    "-reset_timestamps", "1",
-                                                    "-segment_start_number", "1", # 設置分段的起始編號為1
-                                                    f"{full_path}/{base_filename}-%d.m4a",
+                                                    "-f", "m4a",
+                                                    first_file_path,
                                                 ]
 
                                         else:
@@ -1454,25 +1545,21 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                         base_filename = get_formatted_filename(anchor_name, title_in_name)
                                         # 使用新函數獲取不重複的檔案名稱
                                         filename = get_non_duplicate_filename(full_path, base_filename, "ts")
-                                        
+
                                         print(f'{rec_info}/{filename}')
                                         save_file_path = full_path + '/' + filename
-                                        
+
                                         # 從檔案名稱中提取實際使用的基本檔名(可能已包含編號)
                                         actual_base_filename = os.path.splitext(filename)[0]
 
                                         try:
-                                            # 使用實際基本檔名來命名分段檔案，從1開始編號
-                                            segment_template = f"{full_path}/{actual_base_filename}-%d.ts"
+                                            # 使用實際基本檔名來命名分段檔案
+                                            segment_template = f"{full_path}/{actual_base_filename}.ts"
                                             command = [
                                                 "-c:v", "copy",
                                                 "-c:a", "copy",
                                                 "-map", "0",
-                                                "-f", "segment",
-                                                "-segment_time", split_time,
-                                                "-segment_format", 'mpegts',
-                                                "-reset_timestamps", "1",
-                                                "-segment_start_number", "1", # 設置分段的起始編號為1
+                                                "-f", "mpegts",
                                                 segment_template,
                                             ]
 
@@ -1484,7 +1571,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                                 video_save_type,
                                                 custom_script,
                                             )
-                                            
+
                                             # 檢查第一個分段檔案(從1開始)
                                             first_file = f"{full_path}/{actual_base_filename}-1.ts"
                                             if os.path.exists(first_file):
