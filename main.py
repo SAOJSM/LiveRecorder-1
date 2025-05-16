@@ -1885,7 +1885,7 @@ while True:
     popkontv_username = read_config_value(config, '帳號密碼', 'popkontv帳號', '')
     popkontv_partner_code = read_config_value(config, '帳號密碼', 'partner_code', 'P-00001')
     popkontv_password = read_config_value(config, '帳號密碼', 'popkontv密碼', '')
-    twitcasting_account_type = read_config_value(config, '帳號密碼', 'twitcasting帳號密碼', 'normal')
+    twitcasting_account_type = read_config_value(config, '帳號密碼', 'twitcasting帳號型別', 'normal')
     twitcasting_username = read_config_value(config, '帳號密碼', 'twitcasting帳號', '')
     twitcasting_password = read_config_value(config, '帳號密碼', 'twitcasting密碼', '')
     popkontv_access_token = read_config_value(config, 'Authorization', 'popkontv_token', '')
