@@ -276,13 +276,13 @@ https://www.faceit.com/zh/players/Compl1/stream
 1.首先拉取或手動下載本倉庫專案程式碼
 
 ```bash
-git clone https://github.com/ihmily/DouyinLiveRecorder.git
+git clone https://github.com/SAOJSM/LiveRecorder-1.git
 ```
 
 2.進入專案資料夾，安裝依賴
 
 ```bash
-cd DouyinLiveRecorder
+cd LiveRecorder-1
 python -m pip3 install -r requirements.txt
 ```
 
