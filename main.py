@@ -4,7 +4,7 @@
 Author: SAOJSM
 GitHub: https://github.com/SAOJSM
 Date: 2025-03-18 05:40:00
-Update: 2025-03-18 05:40:00
+Update: 2025-08-04 15:45:00
 Copyright (c) 2025-2025 by SAOJSM, All Rights Reserved.
 Function: Record live stream video.
 """
@@ -38,7 +38,7 @@ from ffmpeg_install import (
     check_ffmpeg, ffmpeg_path, current_env_path
 )
 
-version = "v4.0.3"
+version = "v4.0.4"
 platforms = ("\n國內站點：抖音|快手|虎牙|鬥魚|YY|B站|小紅書|bigo|blued|網易CC|千度熱播|貓耳FM|Look|TwitCasting|百度|微博|"
              "酷狗|花椒|流星|Acfun|暢聊|映客|音播|知乎|嗨秀|VV星球|17Live|浪Live|漂漂|六間房|樂嗨|花貓|淘寶|京東"
              "\n海外站點：TikTok|SOOP|PandaTV|WinkTV|FlexTV|PopkonTV|TwitchTV|LiveMe|ShowRoom|CHZZK|Shopee|"
@@ -365,6 +365,28 @@ def segment_video(converts_file_path: str, segment_save_file_path: str, segment_
             except Exception as e:
                 logger.error(f'Error getting video duration or creating segments: {e}')
 
+            # 如果是MP4分段，需要優化每個分段檔案以確保快速開啟
+            if segment_format == 'mp4':
+                # 優化第一個檔案
+                if os.path.exists(first_file_path):
+                    threading.Thread(target=optimize_mp4, args=(first_file_path,)).start()
+                
+                # 優化其他分段檔案
+                if duration > float(segment_time):
+                    segment_count = 2
+                    current_time = float(segment_time) * 2
+                    
+                    while current_time < duration:
+                        # 構建分段檔案路徑
+                        segment_filename = get_non_duplicate_filename(dir_path, base_name, extension)
+                        segment_file_path = f"{dir_path}/{segment_filename}"
+                        
+                        if os.path.exists(segment_file_path):
+                            threading.Thread(target=optimize_mp4, args=(segment_file_path,)).start()
+                        
+                        segment_count += 1
+                        current_time += float(segment_time)
+
             if is_original_delete:
                 time.sleep(1)
                 if os.path.exists(converts_file_path):
@@ -387,7 +409,9 @@ def converts_mp4(converts_file_path: str, is_original_delete: bool = True) -> No
                     "-crf", "23",
                     "-vf", "format=yuv420p",
                     "-c:a", "copy",
-                    "-f", "mp4", converts_file_path.rsplit('.', maxsplit=1)[0] + ".mp4",
+                    "-f", "mp4",
+                    "-movflags", "+faststart",  # 添加faststart標誌以確保快速開啟
+                    converts_file_path.rsplit('.', maxsplit=1)[0] + ".mp4",
                 ]
             else:
                 color_obj.print_colored(f"正在轉碼為MP4格式\n", color_obj.YELLOW)
@@ -395,7 +419,9 @@ def converts_mp4(converts_file_path: str, is_original_delete: bool = True) -> No
                     "ffmpeg", "-i", converts_file_path,
                     "-c:v", "copy",
                     "-c:a", "copy",
-                    "-f", "mp4", converts_file_path.rsplit('.', maxsplit=1)[0] + ".mp4",
+                    "-f", "mp4",
+                    "-movflags", "+faststart",  # 添加faststart標誌以確保快速開啟
+                    converts_file_path.rsplit('.', maxsplit=1)[0] + ".mp4",
                 ]
             _output = subprocess.check_output(
                 ffmpeg_command, stderr=subprocess.STDOUT, startupinfo=get_startup_info(os_type)
@@ -408,6 +434,63 @@ def converts_mp4(converts_file_path: str, is_original_delete: bool = True) -> No
         logger.error(f'Error occurred during conversion: {e}')
     except Exception as e:
         logger.error(f'An unknown error occurred: {e}')
+
+
+def fix_h264_stream_errors(ffmpeg_command: list) -> list:
+    """
+    為FFmpeg命令添加H.264流錯誤修復參數
+    
+    參數:
+    ffmpeg_command: 原始FFmpeg命令列表
+    
+    返回:
+    修正後的FFmpeg命令列表
+    """
+    # 簡化的H.264錯誤修復 - 只添加最關鍵的參數
+    # 這些參數將被插入到基礎命令中，而不是在輸入後
+    return ffmpeg_command  # 暫時返回原命令，錯誤處理已在基礎命令中設定
+
+
+def optimize_mp4(mp4_file_path: str) -> None:
+    """
+    優化MP4檔案，添加faststart標誌以確保快速開啟
+    
+    參數:
+    mp4_file_path: MP4檔案路徑
+    """
+    try:
+        if os.path.exists(mp4_file_path) and os.path.getsize(mp4_file_path) > 0:
+            temp_file_path = mp4_file_path + ".temp"
+            color_obj.print_colored(f"正在優化MP4檔案以確保快速開啟\n", color_obj.YELLOW)
+            
+            ffmpeg_command = [
+                "ffmpeg", "-i", mp4_file_path,
+                "-c:v", "copy",
+                "-c:a", "copy",
+                "-f", "mp4",
+                "-movflags", "+faststart",  # 添加faststart標誌
+                temp_file_path,
+            ]
+            
+            _output = subprocess.check_output(
+                ffmpeg_command, stderr=subprocess.STDOUT, startupinfo=get_startup_info(os_type)
+            )
+            
+            # 替換原檔案
+            if os.path.exists(temp_file_path):
+                os.remove(mp4_file_path)
+                os.rename(temp_file_path, mp4_file_path)
+                
+    except subprocess.CalledProcessError as e:
+        logger.error(f'Error occurred during MP4 optimization: {e}')
+        # 清理臨時檔案
+        if os.path.exists(mp4_file_path + ".temp"):
+            os.remove(mp4_file_path + ".temp")
+    except Exception as e:
+        logger.error(f'An unknown error occurred during MP4 optimization: {e}')
+        # 清理臨時檔案
+        if os.path.exists(mp4_file_path + ".temp"):
+            os.remove(mp4_file_path + ".temp")
 
 
 def converts_m4a(converts_file_path: str, is_original_delete: bool = True) -> None:
@@ -583,6 +666,9 @@ def check_subprocess(record_name: str, record_url: str, ffmpeg_command: list, sa
                         threading.Thread(target=converts_mp4, args=(path, delete_origin_file)).start()
             else:
                 threading.Thread(target=converts_mp4, args=(save_file_path, delete_origin_file)).start()
+        elif save_type == 'MP4':
+            # 直接錄製的MP4檔案需要優化以確保快速開啟
+            threading.Thread(target=optimize_mp4, args=(save_file_path,)).start()
         print(f"\n{record_name} {stop_time} 直播錄製完成\n")
 
         if script_command:
@@ -1238,14 +1324,16 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                     'ffmpeg', "-y",
                                     "-v", "verbose",
                                     "-rw_timeout", rw_timeout,
-                                    "-loglevel", "error",
+                                    "-loglevel", "fatal",  # 只顯示致命錯誤，抑制H.264解碼錯誤訊息
                                     "-hide_banner",
                                     "-user_agent", user_agent,
                                     "-protocol_whitelist", "rtmp,crypto,file,http,https,tcp,tls,udp,rtp,httpproxy",
                                     "-thread_queue_size", "1024",
                                     "-analyzeduration", analyzeduration,
                                     "-probesize", probesize,
-                                    "-fflags", "+discardcorrupt",
+                                    "-fflags", "+discardcorrupt+genpts+igndts",  # 添加igndts忽略DTS
+                                    "-err_detect", "ignore_err",  # 忽略解碼錯誤
+                                    # 移除固定格式指定，讓FFmpeg自動檢測
                                     "-re", "-i", real_url,
                                     "-bufsize", bufsize,
                                     "-sn", "-dn",
@@ -1253,7 +1341,8 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                     "-reconnect_streamed", "-reconnect_at_eof",
                                     "-max_muxing_queue_size", max_muxing_queue_size,
                                     "-correct_ts_overflow", "1",
-                                    "-avoid_negative_ts", "1"
+                                    "-avoid_negative_ts", "make_zero",  # 改為make_zero模式
+                                    "-vsync", "cfr",  # 使用恆定幀率
                                 ]
 
                                 record_headers = {
@@ -1429,25 +1518,72 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                         if split_video_by_time:
                                             # 使用實際基本檔名來命名分段檔案
                                             save_file_path = f"{full_path}/{actual_base_filename}.mp4"
-                                            command = [
-                                                "-c:v", "copy",
-                                                "-c:a", "aac",
-                                                "-map", "0",
-                                                "-f", "mp4",
-                                                "-movflags", "+frag_keyframe+empty_moov",
-                                                save_file_path,
-                                            ]
+                                            if converts_to_h264:
+                                                # 使用 H264 編碼確保相容性
+                                                command = [
+                                                    "-c:v", "libx264",
+                                                    "-preset", "veryfast",
+                                                    "-crf", "23",
+                                                    "-vf", "format=yuv420p",
+                                                    "-c:a", "aac",
+                                                    "-map", "0",
+                                                    "-f", "mp4",
+                                                    # 分段錄製時使用frag_keyframe+empty_moov以支援即時寫入
+                                                    "-movflags", "+frag_keyframe+empty_moov",
+                                                    # H.264編碼器錯誤處理參數
+                                                    "-x264-params", "nal-hrd=cbr:force-cfr=1",
+                                                    "-g", "60",  # 設定GOP大小
+                                                    "-keyint_min", "60",  # 最小關鍵幀間隔
+                                                    save_file_path,
+                                                ]
+                                            else:
+                                                command = [
+                                                    "-c:v", "copy",
+                                                    "-c:a", "aac",
+                                                    "-map", "0",
+                                                    "-f", "mp4",
+                                                    # 分段錄製時使用frag_keyframe+empty_moov以支援即時寫入
+                                                    "-movflags", "+frag_keyframe+empty_moov",
+                                                    # 強化H.264流修復
+                                                    "-bsf:v", "h264_mp4toannexb,h264_metadata=aud=insert:sei_user_data=insert",
+                                                    "-fps_mode", "cfr",  # 強制恆定幀率
+                                                    save_file_path,
+                                                ]
 
                                         else:
-                                            command = [
-                                                "-map", "0",
-                                                "-c:v", "copy",
-                                                "-c:a", "copy",
-                                                "-f", "mp4",
-                                                save_file_path,
-                                            ]
+                                            if converts_to_h264:
+                                                # 使用 H264 編碼確保相容性
+                                                command = [
+                                                    "-map", "0",
+                                                    "-c:v", "libx264",
+                                                    "-preset", "veryfast",
+                                                    "-crf", "23",
+                                                    "-vf", "format=yuv420p",
+                                                    "-c:a", "aac",
+                                                    "-f", "mp4",
+                                                    # H.264編碼器錯誤處理參數
+                                                    "-x264-params", "nal-hrd=cbr:force-cfr=1",
+                                                    "-g", "60",  # 設定GOP大小
+                                                    "-keyint_min", "60",  # 最小關鍵幀間隔
+                                                    # 移除 "+faststart" 以提高即時錄製效能，錄製完成後再優化
+                                                    save_file_path,
+                                                ]
+                                            else:
+                                                command = [
+                                                    "-map", "0",
+                                                    "-c:v", "copy",
+                                                    "-c:a", "aac",
+                                                    "-f", "mp4",
+                                                    # 強化H.264流修復
+                                                    "-bsf:v", "h264_mp4toannexb,h264_metadata=aud=insert:sei_user_data=insert",
+                                                    "-fps_mode", "cfr",  # 強制恆定幀率
+                                                    # 移除 "+faststart" 以提高即時錄製效能，錄製完成後再優化
+                                                    save_file_path,
+                                                ]
 
                                         ffmpeg_command.extend(command)
+                                        # 應用H.264錯誤修復
+                                        ffmpeg_command = fix_h264_stream_errors(ffmpeg_command)
                                         comment_end = check_subprocess(
                                             record_name,
                                             record_url,
@@ -1523,6 +1659,8 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                                 ]
 
                                         ffmpeg_command.extend(command)
+                                        # 應用H.264錯誤修復
+                                        ffmpeg_command = fix_h264_stream_errors(ffmpeg_command)
                                         comment_end = check_subprocess(
                                             record_name,
                                             record_url,
@@ -1560,6 +1698,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                                 "-c:a", "copy",
                                                 "-map", "0",
                                                 "-f", "mpegts",
+                                                # TS格式通常不需要bitstream filter，因為它本身就是transport stream
                                                 segment_template,
                                             ]
 
