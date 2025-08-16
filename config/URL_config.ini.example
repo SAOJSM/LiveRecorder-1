@@ -1,0 +1,20 @@
+# URL配置文件示例
+# 請將此文件複製為 URL_config.ini 並添加您要監控的直播間URL
+# 每行一個URL，支援多種直播平台
+
+# 範例URL (請替換為實際的直播間URL):
+# https://www.douyin.com/user/example_user
+# https://live.kuaishou.com/u/example_user
+# https://www.huya.com/example_room
+# https://www.douyu.com/example_room
+# https://live.bilibili.com/example_room
+# https://soop.tv/example_user
+# https://www.twitch.tv/example_user
+# https://www.youtube.com/@example_channel/live
+
+# 注意事項:
+# 1. 每行只能有一個URL
+# 2. 以 # 開頭的行為註釋行，會被忽略
+# 3. 空行會被忽略
+# 4. 確保URL格式正確
+# 5. 某些平台可能需要在config.ini中配置相應的cookie

@@ -1,0 +1,200 @@
+[錄製設定]
+language(zh_tw/en) = zh_TW
+是否跳過代理檢測(是/否) = 是
+直播儲存路徑(不填則預設) = 
+儲存資料夾是否以作者區分 = 否
+儲存資料夾是否以時間區分 = 否
+儲存資料夾是否以標題區分 = 否
+儲存檔名是否包含標題 = 否
+是否去除名稱中的表情符號 = 是
+視訊儲存格式ts|mkv|flv|mp4|mp3音訊|m4a音訊 = mp4
+原畫|超清|高清|標清|流暢 = 原畫
+是否使用代理ip(是/否) = 否
+代理地址 = 
+同一時間訪問網路的執行緒數 = 5
+循環時間(秒) = 200
+排隊讀取網址時間(秒) = 0
+是否顯示循環秒數 = 否
+是否顯示直播源地址 = 否
+分段錄製是否開啟 = 是
+是否強制啟用https錄製 = 否
+錄製空間剩餘閾值(gb) = 2.0
+視訊分段時間(秒) = 3600
+錄製完成後自動轉為mp4格式 = 是
+mp4格式重新編碼為h264 = 是
+追加格式後刪除原檔案 = 是
+產生時間字幕檔案 = 否
+是否錄製完成後執行自定義指令碼 = 否
+自定義指令碼執行命令 = 
+
+使用代理錄製的平臺(逗號分隔) = tiktok, winktv, popkontv, twitch, liveme, showroom, chzzk, shopee, shp, youtu
+額外使用代理錄製的平臺(逗號分隔) = 
+
+[推送配置]
+直播狀態推送渠道 = 
+釘釘推送介面鏈接 = 
+微信推送介面鏈接 = 
+bark推送介面鏈接 = 
+bark推送中斷級別 = active
+bark推送鈴聲 = 
+釘釘通知@對像(填手機號) = 
+釘釘通知@全體(是/否) = 否
+tgapi令牌 = 
+tg聊天id(個人或者群組id) = 
+smtp郵件伺服器 = 
+是否使用smtp服務ssl加密(是/否) = 
+smtp郵件伺服器埠 = 
+郵箱登錄賬號 = 
+發件人密碼(授權碼) = 
+發件人郵箱 = 
+發件人顯示昵稱 = 
+收件人郵箱 = 
+推送訊息標題 = 
+ntfy推送介面鏈接 = 
+ntfy推送標籤 = 
+ntfy推送郵箱 = 
+
+[SOOP]
+sooplive_cookie = 
+netease_cookie = 
+sooplive帳號 = 
+sooplive密碼 = 
+
+[CHZZK]
+nid_aut = 
+nid_ses = 
+
+[TWITCH]
+twitch_cookie = 
+
+[YOUTUBE]
+youtube_cookie = 
+
+[TIKTOK]
+tiktok_cookie = 
+
+[SHOPEE]
+shopee_cookie = 
+
+[BIGO]
+bigo_cookie = 
+
+[BLUED]
+blued_cookie = 
+
+[NETEASE]
+netease_cookie = 
+
+[LOOK]
+look_cookie = 
+
+[WINKTV]
+winktv_cookie = 
+
+[POPKONTV]
+popkontv_cookie = 
+
+[FLEXTV]
+flextv_cookie = 
+
+[PANDATV]
+pandatv_cookie = 
+
+[LIVEME]
+liveme_cookie = 
+
+[SHOWROOM]
+showroom_cookie = 
+
+[HUYA]
+huya_cookie = 
+
+[DOUYU]
+douyu_cookie = 
+
+[YY]
+yy_cookie = 
+
+[BILIBILI]
+bilibili_cookie = 
+
+[KUAISHOU]
+kuaishou_cookie = 
+
+[DOUYIN]
+douyin_cookie = 
+
+[XIAOHONGSHU]
+xiaohongshu_cookie = 
+
+[QIANDUHOT]
+qianduhot_cookie = 
+
+[MAOERFM]
+maoerfm_cookie = 
+
+[KUGOU]
+kugou_cookie = 
+
+[HUAJIAO]
+huajiao_cookie = 
+
+[LIUXING]
+liuxing_cookie = 
+
+[ACFUN]
+acfun_cookie = 
+
+[CHANGLIAO]
+changliao_cookie = 
+
+[YINGKE]
+yingke_cookie = 
+
+[YINBO]
+yinbo_cookie = 
+
+[ZHIHU]
+zhihu_cookie = 
+
+[HAIXIU]
+haixiu_cookie = 
+
+[VVXINGQIU]
+vvxingqiu_cookie = 
+
+[17LIVE]
+17live_cookie = 
+
+[LANGLIVE]
+langlive_cookie = 
+
+[PIAOPIAO]
+piaopiao_cookie = 
+
+[LIUJIANFANG]
+liujianfang_cookie = 
+
+[LEHAI]
+lehai_cookie = 
+
+[HUAMAO]
+huamao_cookie = 
+
+[TAOBAO]
+taobao_cookie = 
+
+[JINGDONG]
+jingdong_cookie = 
+
+[BAIDU]
+baidu_cookie = 
+
+[WEIBO]
+weibo_cookie = 
+
+[TWITCASTING]
+twitcasting_cookie = 
+
+[FACEIT]
+faceit_cookie = 

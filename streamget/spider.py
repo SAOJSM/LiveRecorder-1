@@ -1122,6 +1122,19 @@ async def get_pandatv_stream_data(url: str, proxy_addr: OptionalStr = None, cook
     json_str = await async_req('https://api.pandalive.co.kr/v1/member/bj',
                        proxy_addr=proxy_addr, headers=headers, data=data, abroad=True)
     json_data = json.loads(json_str)
+
+    # 檢查 bjInfo 是否存在於 json_data 中
+    if 'bjInfo' not in json_data:
+        # 檢查是否有錯誤訊息
+        if 'message' in json_data:
+            if json_data['message'] == '유저 정보가 없습니다.':
+                print(f"PandaTV: 找不到該主播信息，可能主播ID不存在或已更改")
+            else:
+                print(f"PandaTV API錯誤: {json_data['message']}")
+        else:
+            print(f"無法獲取主播信息，API 返回數據中缺少 bjInfo 字段: {json_data}")
+        return result
+
     anchor_id = json_data['bjInfo']['id']
     anchor_name = f"{json_data['bjInfo']['nick']}-{anchor_id}"
     result['anchor_name'] = anchor_name
@@ -1194,6 +1207,19 @@ async def get_winktv_bj_info(url: str, proxy_addr: OptionalStr = None, cookies: 
     info_api = 'https://api.winktv.co.kr/v1/member/bj'
     json_str = await async_req(url=info_api, proxy_addr=proxy_addr, headers=headers, data=data, abroad=True)
     json_data = json.loads(json_str)
+
+    # 檢查 bjInfo 是否存在於 json_data 中
+    if 'bjInfo' not in json_data:
+        # 檢查是否有錯誤訊息
+        if 'message' in json_data:
+            if json_data['message'] == '유저 정보가 없습니다.':
+                print(f"WinkTV: 找不到該主播信息，可能主播ID不存在或已更改")
+            else:
+                print(f"WinkTV API錯誤: {json_data['message']}")
+        else:
+            print(f"無法獲取主播信息，API 返回數據中缺少 bjInfo 字段: {json_data}")
+        return "Unknown", False
+
     live_status = 'media' in json_data
     anchor_id = json_data['bjInfo']['id']
     anchor_name = f"{json_data['bjInfo']['nick']}-{anchor_id}"
