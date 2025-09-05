@@ -779,6 +779,9 @@ def generate_subtitles(record_name: str, ass_filename: str, sub_format: str = 's
         re_datatime = today.strftime('%Y-%m-%d %H:%M:%S')
 
 
+
+
+
 # ==================== 錯誤處理與監控函數 ====================
 def adjust_max_request() -> None:
     """
@@ -937,7 +940,7 @@ def clear_record_info(record_name: str, record_url: str) -> None:
 
 
 def check_subprocess(record_name: str, record_url: str, ffmpeg_command: list, save_type: str,
-                     script_command: str | None = None) -> bool:
+                     script_command: str | None = None, platform: str = "", proxy_address: str = None) -> bool:
     save_file_path = ffmpeg_command[-1]
     # 修改為捕獲stderr以便監控錯誤訊息
     process = subprocess.Popen(
@@ -966,8 +969,8 @@ def check_subprocess(record_name: str, record_url: str, ffmpeg_command: list, sa
             else:
                 process.send_signal(signal.SIGINT)
             process.wait()
-            return True
-        
+            return True  # 只有被手動註釋時才真正退出執行緒
+            
         # 簡化的封包監控（預設啟用，不記錄）
         if enable_packet_monitoring:
             try:
@@ -1037,7 +1040,7 @@ def check_subprocess(record_name: str, record_url: str, ffmpeg_command: list, sa
         color_obj.print_colored(f"\n{record_name} {stop_time} 直播錄製出錯,返回碼: {return_code}\n", color_obj.RED)
 
     recording.discard(record_name)
-    return False
+    return False  # 返回False讓程式回到監控循環，而不是退出執行緒
 
 
 # ==================== 名稱處理相關函數 ====================
@@ -1167,6 +1170,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                 port_info = asyncio.run(stream.get_tiktok_stream_url(json_data, record_quality))
                             else:
                                 logger.error("錯誤資訊: 網路異常，請檢查網路是否能正常訪問TikTok平臺")
+                                port_info = None
 
                     elif record_url.find("https://live.kuaishou.com/") > -1:
                         platform = '快手直播'
@@ -1250,11 +1254,17 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                 ))
                                 if json_data and json_data.get('new_cookies'):
                                     utils.update_config(
-                                        config_file, 'Cookie', 'sooplive_cookie', json_data['new_cookies']
+                                        config_file, 'Cookie', 'sooplive_cookie', json_data.get('new_cookies')
                                     )
-                                port_info = asyncio.run(stream.get_stream_url(json_data, record_quality, spec=True))
+                                # 檢查json_data是否包含必要的數據結構
+                                if json_data and json_data.get('is_live') and 'play_url_list' in json_data:
+                                    port_info = asyncio.run(stream.get_stream_url(json_data, record_quality, spec=True))
+                                else:
+                                    # 如果沒有有效的流數據，設置為None
+                                    port_info = json_data if json_data else None
                             else:
                                 logger.error("錯誤資訊: 網路異常，請檢查本網路是否能正常訪問SOOP平臺")
+                                port_info = None
 
                     elif record_url.find("cc.163.com/") > -1:
                         platform = '網易CC直播'
@@ -1269,7 +1279,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                             port_info = asyncio.run(spider.get_qiandurebo_stream_data(
                                 url=record_url, proxy_addr=proxy_address, cookies=qiandurebo_cookie))
 
-                    elif record_url.find("w2.pandalive.co.kr/") > -1:
+                    elif record_url.find("www.pandalive.co.kr/") > -1:
                         platform = 'PandaTV'
                         with semaphore:
                             if global_proxy or proxy_address:
@@ -1281,6 +1291,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                 port_info = asyncio.run(stream.get_stream_url(json_data, record_quality, spec=True))
                             else:
                                 logger.error("錯誤資訊: 網路異常，請檢查本網路是否能正常訪問PandaTV直播平臺")
+                                port_info = None
 
                     elif record_url.find("fm.missevan.com/") > -1:
                         platform = '貓耳FM直播'
@@ -1299,6 +1310,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                 port_info = asyncio.run(stream.get_stream_url(json_data, record_quality, spec=True))
                             else:
                                 logger.error("錯誤資訊: 網路異常，請檢查本網路是否能正常訪問WinkTV直播平臺")
+                                port_info = None
 
                     elif record_url.find("www.flextv.co.kr/") > -1:
                         platform = 'FlexTV'
@@ -1313,11 +1325,12 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                 ))
                                 if json_data and json_data.get('new_cookies'):
                                     utils.update_config(
-                                        config_file, 'Cookie', 'flextv_cookie', json_data['new_cookies']
+                                        config_file, 'Cookie', 'flextv_cookie', json_data.get('new_cookies')
                                     )
                                 port_info = asyncio.run(stream.get_stream_url(json_data, record_quality, spec=True))
                             else:
                                 logger.error("錯誤資訊: 網路異常，請檢查本網路是否能正常訪問FlexTV直播平臺")
+                                port_info = None
 
                     elif record_url.find("look.163.com/") > -1:
                         platform = 'Look直播'
@@ -1341,11 +1354,12 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                 if port_info and port_info.get('new_token'):
                                     utils.update_config(
                                         file_path=config_file, section='Authorization', key='popkontv_token',
-                                        new_value=port_info['new_token']
+                                        new_value=port_info.get('new_token')
                                     )
 
                             else:
                                 logger.error("錯誤資訊: 網路異常，請檢查本網路是否能正常訪問PopkonTV直播平臺")
+                                port_info = None  # 明確設置為 None
 
                     elif record_url.find("twitcasting.tv/") > -1:
                         platform = 'TwitCasting'
@@ -1361,7 +1375,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                             if port_info and port_info.get('new_cookies'):
                                 utils.update_config(
                                     file_path=config_file, section='Cookie', key='twitcasting_cookie',
-                                    new_value=port_info['new_cookies']
+                                    new_value=port_info.get('new_cookies')
                                 )
 
                     elif record_url.find("live.baidu.com/") > -1:
@@ -1399,6 +1413,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                 port_info = asyncio.run(stream.get_stream_url(json_data, record_quality, spec=True))
                             else:
                                 logger.error("錯誤資訊: 網路異常，請檢查本網路是否能正常訪問TwitchTV直播平臺")
+                                port_info = None
 
                     elif record_url.find("www.liveme.com/") > -1:
                         if global_proxy or proxy_address:
@@ -1408,6 +1423,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                     url=record_url, proxy_addr=proxy_address, cookies=liveme_cookie))
                         else:
                             logger.error("錯誤資訊: 網路異常，請檢查本網路是否能正常訪問LiveMe直播平臺")
+                            port_info = None
 
                     elif record_url.find("www.huajiao.com/") > -1:
                         platform = '花椒直播'
@@ -1520,8 +1536,8 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                         with semaphore:
                             port_info = asyncio.run(spider.get_shopee_stream_url(
                                 url=record_url, proxy_addr=proxy_address, cookies=shopee_cookie))
-                            if port_info.get('uid'):
-                                new_record_url = record_url.split('?')[0] + '?' + str(port_info['uid'])
+                            if port_info and port_info.get('uid'):
+                                new_record_url = record_url.split('?')[0] + '?' + str(port_info.get('uid'))
 
                     elif record_url.find("www.youtube.com/") > -1 or record_url.find("youtu.be/") > -1:
                         platform = 'Youtube'
@@ -1556,6 +1572,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                     port_info = asyncio.run(stream.get_stream_url(json_data, record_quality, spec=True))
                             else:
                                 logger.error("錯誤資訊: 網路異常，請檢查本網路是否能正常訪問faceit直播平臺")
+                                port_info = None
 
                     elif record_url.find(".m3u8") > -1 or record_url.find(".flv") > -1:
                         platform = '自定義錄製直播'
@@ -1572,6 +1589,14 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                     else:
                         logger.error(f'{record_url} {platform}直播地址')
                         return
+
+                    # 檢查 port_info 是否為 None，避免 NoneType 錯誤
+                    if not port_info:
+                        print(f'序號{count_variable} 網址內容獲取失敗,進行重試中...獲取失敗的地址是:{url_data}')
+                        with max_request_lock:
+                            error_count += 1
+                            error_window.append(1)
+                        continue  # 跳過本次循環，進行重試
 
                     if anchor_name:
                         if '主播:' in anchor_name:
@@ -1607,7 +1632,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                             run_once = True
 
                         push_at = datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S')
-                        if port_info['is_live'] is False:
+                        if port_info.get('is_live') is False:
                             print(f"\r{record_name} 等待直播... ")
 
                             if start_pushed:
@@ -1733,7 +1758,7 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                 ]
 
                                 record_headers = {
-                                    'PandaTV': 'origin:https://w2.pandalive.co.kr',
+                                    'PandaTV': 'origin:https://www.pandalive.co.kr',
                                     'WinkTV': 'origin:https://www.winktv.co.kr',
                                     'PopkonTV': 'origin:https://www.popkontv.com',
                                     'FlexTV': 'origin:https://www.flextv.co.kr',
@@ -1759,7 +1784,8 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                 if show_url:
                                     re_plat = ('WinkTV', 'PandaTV', 'ShowRoom', 'CHZZK', 'Youtube')
                                     if platform in re_plat:
-                                        logger.info(f"{platform} | {anchor_name} | 直播源地址: {port_info['m3u8_url']}")
+                                        m3u8_url = port_info.get('m3u8_url', '未知')
+                                        logger.info(f"{platform} | {anchor_name} | 直播源地址: {m3u8_url}")
                                     else:
                                         logger.info(
                                             f"{platform} | {anchor_name} | 直播源地址: {real_url}")
@@ -1881,10 +1907,15 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                             record_url,
                                             ffmpeg_command,
                                             video_save_type,
-                                            custom_script
+                                            custom_script,
+                                            platform,
+                                            proxy_address
                                         )
+                                        # 只有被手動註釋時才退出執行緒，錄製自然結束時繼續監控循環
                                         if comment_end:
                                             return
+                                        # 錄製結束，設置標誌並繼續監控循環
+                                        record_finished = True
 
                                     except subprocess.CalledProcessError as e:
                                         logger.error(f"錯誤資訊: {e} 發生錯誤的行數: {e.__traceback__.tb_lineno}")
@@ -1990,10 +2021,15 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                             record_url,
                                             ffmpeg_command,
                                             video_save_type,
-                                            custom_script
+                                            custom_script,
+                                            platform,
+                                            proxy_address
                                         )
+                                        # 只有被手動註釋時才退出執行緒，錄製自然結束時繼續監控循環
                                         if comment_end:
                                             return
+                                        # 錄製結束，設置標誌並繼續監控循環
+                                        record_finished = True
 
                                     except subprocess.CalledProcessError as e:
                                         logger.error(f"錯誤資訊: {e} 發生錯誤的行數: {e.__traceback__.tb_lineno}")
@@ -2066,10 +2102,15 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                             record_url,
                                             ffmpeg_command,
                                             video_save_type,
-                                            custom_script
+                                            custom_script,
+                                            platform,
+                                            proxy_address
                                         )
+                                        # 只有被手動註釋時才退出執行緒，錄製自然結束時繼續監控循環
                                         if comment_end:
                                             return
+                                        # 錄製結束，設置標誌並繼續監控循環
+                                        record_finished = True
 
                                     except subprocess.CalledProcessError as e:
                                         logger.error(f"錯誤資訊: {e} 發生錯誤的行數: {e.__traceback__.tb_lineno}")
@@ -2111,6 +2152,8 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                                 ffmpeg_command,
                                                 video_save_type,
                                                 custom_script,
+                                                platform,
+                                                proxy_address
                                             )
 
                                             # 檢查第一個分段檔案(從1開始)
@@ -2147,13 +2190,18 @@ def start_record(url_data: tuple, count_variable: int = -1) -> None:
                                                 record_url,
                                                 ffmpeg_command,
                                                 video_save_type,
-                                                custom_script
+                                                custom_script,
+                                                platform,
+                                                proxy_address
                                             )
+                                            # 只有被手動註釋時才退出執行緒，錄製自然結束時繼續監控循環
                                             if comment_end:
                                                 threading.Thread(
                                                     target=converts_mp4, args=(save_file_path, delete_origin_file)
                                                 ).start()
                                                 return
+                                            # 錄製結束，設置標誌並繼續監控循環
+                                            record_finished = True
 
                                         except subprocess.CalledProcessError as e:
                                             logger.error(f"錯誤資訊: {e} 發生錯誤的行數: {e.__traceback__.tb_lineno}")
@@ -2603,7 +2651,7 @@ while True:
                     'www.tiktok.com',
                     'play.sooplive.co.kr',
                     'm.sooplive.co.kr',
-                    'w2.pandalive.co.kr',
+                    'www.pandalive.co.kr',
                     'www.winktv.co.kr',
                     'www.flextv.co.kr',
                     'www.popkontv.com',

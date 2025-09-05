@@ -137,14 +137,16 @@ async def get_douyin_app_stream_data(url: str, proxy_addr: OptionalStr = None, c
                 else:
                     json_str = live_core_sdk_data['pull_data']['stream_data']
                 json_data = json.loads(json_str)
-                if 'origin' in json_data['data']:
+                # 安全檢查：確保 json_data 和 data 鍵存在
+                if json_data and 'data' in json_data and json_data['data'] and 'origin' in json_data['data']:
                     origin_url_list = json_data['data']['origin']['main']
-                    origin_m3u8 = {'ORIGIN': origin_url_list["hls"]}
-                    origin_flv = {'ORIGIN': origin_url_list["flv"]}
-                    hls_pull_url_map = room_data['stream_url']['hls_pull_url_map']
-                    flv_pull_url = room_data['stream_url']['flv_pull_url']
-                    room_data['stream_url']['hls_pull_url_map'] = {**origin_m3u8, **hls_pull_url_map}
-                    room_data['stream_url']['flv_pull_url'] = {**origin_flv, **flv_pull_url}
+                    if origin_url_list and 'hls' in origin_url_list and 'flv' in origin_url_list:
+                        origin_m3u8 = {'ORIGIN': origin_url_list["hls"]}
+                        origin_flv = {'ORIGIN': origin_url_list["flv"]}
+                        hls_pull_url_map = room_data['stream_url']['hls_pull_url_map']
+                        flv_pull_url = room_data['stream_url']['flv_pull_url']
+                        room_data['stream_url']['hls_pull_url_map'] = {**origin_m3u8, **hls_pull_url_map}
+                        room_data['stream_url']['flv_pull_url'] = {**origin_flv, **flv_pull_url}
     except Exception as e:
         print(f"Error message: {e} Error line: {e.__traceback__.tb_lineno}")
         room_data = {'anchor_name': ""}
@@ -951,7 +953,22 @@ async def get_sooplive_stream_data(
     url2 = 'http://api.m.sooplive.co.kr/broad/a/watch'
 
     json_str = await async_req(url=url2, proxy_addr=proxy_addr, headers=headers, data=data, abroad=True)
-    json_data = json.loads(json_str)
+    
+    # 檢查響應是否為空或無效
+    if not json_str or not json_str.strip():
+        print(f"SOOP API returned empty response for URL: {url}")
+        return {"anchor_name": "", "is_live": False}
+    
+    try:
+        json_data = json.loads(json_str)
+    except json.JSONDecodeError as e:
+        print(f"SOOP API returned invalid JSON for URL: {url}. Response: {json_str[:100]}...")
+        return {"anchor_name": "", "is_live": False}
+
+    # 檢查JSON結構是否正確
+    if not json_data or 'data' not in json_data:
+        print(f"SOOP API returned unexpected JSON structure for URL: {url}")
+        return {"anchor_name": "", "is_live": False}
 
     if 'user_nick' in json_data['data']:
         anchor_name = json_data['data']['user_nick']
@@ -975,28 +992,28 @@ async def get_sooplive_stream_data(
         play_url_list = sorted(play_url_list, key=lambda purl: url_to_bandwidth[purl], reverse=True)
         return play_url_list
 
+    async def handle_login() -> OptionalStr:
+        cookie = await login_sooplive(username, password, proxy_addr=proxy_addr)
+        if 'AuthTicket=' in cookie:
+            print("sooplive platform login successful! Starting to fetch live streaming data...")
+            return cookie
+
+    async def fetch_data(cookie, _result) -> dict:
+        aid_token = await get_sooplive_tk(url, rtype='aid', proxy_addr=proxy_addr, cookies=cookie)
+        _anchor_name, _broad_no = await get_sooplive_tk(url, rtype='info', proxy_addr=proxy_addr, cookies=cookie)
+        _view_url_data = await get_sooplive_cdn_url(_broad_no, proxy_addr=proxy_addr)
+        _view_url = _view_url_data['view_url']
+        _m3u8_url = _view_url + '?aid=' + aid_token
+        _result |= {
+            "anchor_name": _anchor_name,
+            "is_live": True,
+            "m3u8_url": _m3u8_url,
+            'play_url_list': await get_url_list(_m3u8_url),
+            'new_cookies': cookie
+        }
+        return _result
+
     if not anchor_name:
-        async def handle_login() -> OptionalStr:
-            cookie = await login_sooplive(username, password, proxy_addr=proxy_addr)
-            if 'AuthTicket=' in cookie:
-                print("sooplive platform login successful! Starting to fetch live streaming data...")
-                return cookie
-
-        async def fetch_data(cookie, _result) -> dict:
-            aid_token = await get_sooplive_tk(url, rtype='aid', proxy_addr=proxy_addr, cookies=cookie)
-            _anchor_name, _broad_no = await get_sooplive_tk(url, rtype='info', proxy_addr=proxy_addr, cookies=cookie)
-            _view_url_data = await get_sooplive_cdn_url(_broad_no, proxy_addr=proxy_addr)
-            _view_url = _view_url_data['view_url']
-            _m3u8_url = _view_url + '?aid=' + aid_token
-            _result |= {
-                "anchor_name": _anchor_name,
-                "is_live": True,
-                "m3u8_url": _m3u8_url,
-                'play_url_list': await get_url_list(_m3u8_url),
-                'new_cookies': cookie
-            }
-            return _result
-
         if json_data['data']['code'] == -3001:
             print("sooplive live stream failed to retrieve, the live stream just ended.")
             return result
@@ -1095,8 +1112,8 @@ async def get_qiandurebo_stream_data(url: str, proxy_addr: OptionalStr = None, c
 @trace_error_decorator
 async def get_pandatv_stream_data(url: str, proxy_addr: OptionalStr = None, cookies: OptionalStr = None) -> dict:
     headers = {
-        'origin': 'https://w2.pandalive.co.kr',
-        'referer': 'https://w2.pandalive.co.kr/',
+        'origin': 'https://www.pandalive.co.kr',
+        'referer': 'https://www.pandalive.co.kr/',
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:124.0) Gecko/20100101 Firefox/124.0',
     }
     if cookies:
@@ -1567,12 +1584,15 @@ async def get_popkontv_stream_data(
 
     partner_code = ''
     anchor_name = 'Unknown'
-    for item in json_data['data']['broadCastList']:
-        if item['mcSignId'] == anchor_id:
-            mc_name = item['nickName']
-            anchor_name = f"{mc_name}-{anchor_id}"
-            partner_code = item['mcPartnerCode']
-            break
+    
+    # 安全檢查：確保 json_data 和必要的鍵存在
+    if json_data and 'data' in json_data and json_data['data'] and 'broadCastList' in json_data['data']:
+        for item in json_data['data']['broadCastList']:
+            if item and 'mcSignId' in item and item['mcSignId'] == anchor_id:
+                mc_name = item.get('nickName', 'Unknown')
+                anchor_name = f"{mc_name}-{anchor_id}"
+                partner_code = item.get('mcPartnerCode', '')
+                break
 
     if not partner_code:
         if 'mcPartnerCode' in url:
@@ -1588,17 +1608,30 @@ async def get_popkontv_stream_data(
 
     live_url = f"https://www.popkontv.com/live/view?castId={anchor_id}&partnerCode={partner_code}"
     html_str2 = await async_req(live_url, proxy_addr=proxy_addr, headers=headers, abroad=True)
-    json_str2 = re.search('<script id="__NEXT_DATA__" type="application/json">(.*?)</script>', html_str2).group(1)
-    json_data2 = json.loads(json_str2)
-    if 'mcData' in json_data2['props']['pageProps']:
-        room_data = json_data2['props']['pageProps']['mcData']['data']
-        is_private = room_data['mc_isPrivate']
-        cast_start_date_code = room_data['mc_castStartDate']
-        mc_sign_id = room_data['mc_signId']
-        cast_type = room_data['castType']
-        return anchor_name, [cast_start_date_code, partner_code, mc_sign_id, cast_type, is_private]
-    else:
+    
+    # 安全檢查：確保能找到 JSON 數據
+    json_match = re.search('<script id="__NEXT_DATA__" type="application/json">(.*?)</script>', html_str2)
+    if not json_match:
         return anchor_name, None
+        
+    json_str2 = json_match.group(1)
+    json_data2 = json.loads(json_str2)
+    
+    # 安全檢查：確保 JSON 結構完整
+    if (json_data2 and 'props' in json_data2 and json_data2['props'] and 
+        'pageProps' in json_data2['props'] and json_data2['props']['pageProps'] and
+        'mcData' in json_data2['props']['pageProps'] and json_data2['props']['pageProps']['mcData'] and
+        'data' in json_data2['props']['pageProps']['mcData']):
+        
+        room_data = json_data2['props']['pageProps']['mcData']['data']
+        if room_data:
+            is_private = room_data.get('mc_isPrivate', 0)
+            cast_start_date_code = room_data.get('mc_castStartDate', '')
+            mc_sign_id = room_data.get('mc_signId', anchor_id)
+            cast_type = room_data.get('castType', 0)
+            return anchor_name, [cast_start_date_code, partner_code, mc_sign_id, cast_type, is_private]
+    
+    return anchor_name, None
 
 
 @trace_error_decorator
@@ -1654,7 +1687,7 @@ async def get_popkontv_stream_url(
 
         json_str = await fetch_data(headers, partner_code)
 
-        if 'HTTP Error 400' in json_str or 'statusCd":"E5000' in json_str:
+        if 'HTTP Error 400' in json_str or 'statusCd":"E5000' in json_str or 'Access token expired' in json_str:
             print("Failed to retrieve popkontv live stream [token does not exist or has expired]: Please log in to "
                   "watch.")
             print("Attempting to log in to the popkontv live streaming platform, please ensure your account "
