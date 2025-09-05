@@ -1,6 +1,6 @@
 ![video_spider](https://socialify.git.ci/SAOJSM/LiveRecorder-1/image?font=Inter&forks=1&language=1&owner=1&pattern=Circuit%20Board&stargazers=1&theme=Light)
 
-## 💡簡介
+## 💡簡介 
 [![Python Version](https://img.shields.io/badge/python-3.11.6-blue.svg)](https://www.python.org/downloads/release/python-3116/)
 [![Supported Platforms](https://img.shields.io/badge/platforms-Windows%20%7C%20Linux-blue.svg)](https://github.com/SAOJSM/LiveRecorder-1)
 [![Docker Pulls](https://img.shields.io/docker/pulls/SAOJSM/LiveRecorder-1?label=Docker%20Pulls&color=blue&logo=docker)](https://hub.docker.com/r/SAOJSM/LiveRecorder-1/tags)
